@@ -1,7 +1,7 @@
 const errorHandler = require("express-async-handler");
-const Donation = require("../Models/donation.model");
+const Donation = require("../models/donation.model");
 const User = require("../models/user.model");
-const Request = require("../Models/request.model");
+const Request = require("../models/request.model");
 
 const getAllDonations = errorHandler(async (req, res) => {
   try {

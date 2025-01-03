@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // for posting a donation in donor page
-router.post("/", upload.single('picture'), postDonation);
+router.post("/", postDonation);
 
 // for deleting donation when receiver declines the donation
 router.delete("/:id", deleteDonation);

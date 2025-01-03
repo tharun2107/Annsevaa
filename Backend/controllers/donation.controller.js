@@ -6,10 +6,12 @@ const Request = require("../models/request.model");
 const path = require("path");
 
 const postDonation = errorHandler(async (req, res) => {
-  const { quantity, receiverId, shelfLife, volunteer, location } = req.body;
-
-  const user = req.user;
-  const donorId = user._id;
+  const { quantity, receiverId, shelfLife, location } = req.body;
+    console.log(req.body);
+  try {
+    const user = req.user;
+  const donorId = user.id;
+  console.log("Donor ID:", donorId);
 
   // Image validation (optional)
   // You can add checks for supported image formats and size limits
@@ -26,15 +28,18 @@ const postDonation = errorHandler(async (req, res) => {
     quantity,
     shelfLife,
     receiverId,
-    needVolunteer: volunteer,
-    pictureUrl,
+    //needVolunteer: volunteer,
+    // pictureUrl,
   });
 
   const savedDonation = await newDonation.save();
 
-  res
-    .status(201)
-    .json({ msg: "Donation request sent successfully", savedDonation });
+  res.status(201).json({ msg: "Donation request sent successfully", savedDonation });
+  }
+  catch (err) {
+    //console.error("Error creating donation:", error);
+    res.status(400).json({ msg: "Error creating donation", error });
+  }
 });
 
 const deleteDonation = async (req, res) => {
@@ -71,7 +76,7 @@ const acceptDonation = async (req, res) => {
     
 
       // updating existing requests of receiver
-      const request = await Request.findOne({ receiverId: req.user._id });
+      const request = await Request.findOne({ receiverId: req.user.id });
       if(request.quantity - quantity <= 0) {
         const deletedRequest = await Request.findByIdAndDelete(request._id);
       } else {

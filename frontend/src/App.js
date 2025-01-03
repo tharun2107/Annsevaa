@@ -62,10 +62,12 @@
 import UserRegistration from './Components/UserRegistration';
 import Login from './Components/Login';
 import Home from './Components/Home';
+import Donor from './Components/Donor';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
+import {Receiver} from './Components/Receiver';
 function App() {
   return (
     <BrowserRouter>
@@ -77,6 +79,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/dashboard" element={<div>Dashboard</div>} />
+          <Route path="/receiver" element={<Receiver />} />
+          <Route path="/donor" element={<Donor/>} />
         </Routes>
         <ToastContainer /> {/* Add ToastContainer here */}
       </div>
