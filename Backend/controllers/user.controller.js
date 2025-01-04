@@ -211,7 +211,7 @@ const verifyotp = async (req, res) => {
 
     if (otpStore[phoneNumber] === otp) {
         delete otpStore[phoneNumber]; // Clear OTP after verification
-        const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '5h' });
         res.status(200).json({ message: 'OTP verified successfully', token });
     } else {
         res.status(400).json({ message: 'Invalid OTP' });
@@ -255,7 +255,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "5h",
     });
 
     res.status(200).json({ msg: "Login successful", token, user });

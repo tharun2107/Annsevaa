@@ -15,7 +15,9 @@ const donationSchema = new mongoose.Schema(
     quantity: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["pending", "assigning_volunteer", "volunteer_assigned", "self_pickup", "collected", "delivered"],
+      // enum: ["pending", "assigning_volunteer", "volunteer_assigned", "self_pickup", "collected", "delivered"],
+      // enum: ["pending", "approved","pickby", "completed"],
+      enum: ["pending", "approved", "pickby", "completed", "pickbyreceiver", "pickbydonor", "pickbyvolunteer","rejected"], // Add possible dynamic statuses here
       default: "pending",
     },
     shelfLife: { type: Number, required: true },
@@ -23,7 +25,7 @@ const donationSchema = new mongoose.Schema(
     needVolunteer: { type: Boolean, default: false },
     volunteerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     pictureUrl: { type: String },
-  },
+  },    
   { timestamps: true }
 );
 
