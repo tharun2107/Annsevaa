@@ -6,11 +6,11 @@ const {
     login,
     // updateAvailability,
     // updateActiveReceiving,
-    // updateUser,
+    updateUser,
     // getDonorLog,
     // getReceiverLog,
     // getVolunteerLog,
-    // getProfile,
+    getProfile,
     SendOtp,
     verifyotp
 } = require("../controllers/user.controller");
@@ -22,13 +22,13 @@ const {
 // router.put("/receiver", updateActiveReceiving);
 
 // // profile update
-// router.put("/", updateUser);
+router.put("/", updateUser);
 
 // logs or histories for each user
 // router.get("/log/donor", getDonorLog);
 // router.get("/log/receiver", getReceiverLog);
 // router.get("/log/volunteer", getVolunteerLog);
-// router.get("/profile", getProfile);
+router.get("/profile", getProfile);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/sent-otp",SendOtp);

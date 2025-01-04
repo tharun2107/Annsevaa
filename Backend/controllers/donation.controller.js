@@ -1,6 +1,10 @@
 const errorHandler = require("express-async-handler");
 const Donation = require("../models/donation.model");
 const mongoose = require("mongoose");
+ 
+const User = require("../models/user.model");
+const Request = require("../models/request.model");
+ 
 const path = require("path");
 
 const postDonation = errorHandler(async (req, res) => {
@@ -43,9 +47,6 @@ const postDonation = errorHandler(async (req, res) => {
     res.status(400).json({ msg: "Error creating donation", error: err.message });
   }
 });
-
- 
-
  
 const deleteDonation = async (req, res) => {
   const donationId = req.params.id;

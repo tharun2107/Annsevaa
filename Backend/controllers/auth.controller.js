@@ -287,7 +287,7 @@ const loginHandler = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
     res.status(200).json({ message: 'Login successful', token, user });
   } catch (error) {
     res.status(500).json({ message: 'Failed to login', error });

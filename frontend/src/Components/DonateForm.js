@@ -1,12 +1,13 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 import {
   FaCamera,
   FaClock,
   FaUtensils,
-  FaWeight
+  FaWeight,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,47 +15,82 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./styles/DonateForm.css";
 
-const DonateForm = ({ request, requestId, setShowForm }) => {
+const DonateForm = ({ receiverId, setShowForm }) => {
   const [foodItems, setFoodItems] = useState("");
   const [quantity, setQuantity] = useState("");
   const [shelfLife, setShelfLife] = useState("");
   const [picture, setPicture] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [location, setLocation] = useState(""); // User input for location or landmark
   const [showModal, setShowModal] = useState(true);
+  const [latitude, setLatitude] = useState(null); // Store latitude
+  const [longitude, setLongitude] = useState(null); // Store longitude
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch the user's geolocation if location permission is granted
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          setLocation("Location fetched using geolocation"); // Placeholder text for location
+        },
+        (error) => {
+          toast.error("Location access denied. Please enable location.");
+        }
+      );
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(); // Create a new FormData object
-    formData.append("foodItems", foodItems);
-    formData.append("quantity", quantity);
-    formData.append("shelfLife", shelfLife);
-    formData.append("picture", picture); // Append the actual file
-    formData.append("requestId", requestId);
+    // Ensure we send the location data as an object
+    const locationData = {
+      landmark: location || "No landmark provided",
+      latitude,
+      longitude,
+    };
+
+    const donationData = {
+      quantity,
+      shelfLife,
+      location: {
+        landmark: location || "No landmark provided",
+        lat: latitude || null,  // If no latitude, set it to null or handle accordingly
+        long: longitude || null,  // Same for longitude
+      },
+      receiverId, // Send receiverId here
+    };
+    
+    if (picture) {
+      donationData.picture = picture;
+    }
 
     try {
       const response = await axios.post(
-        "http://localhost:9004/api/donation",
-        formData,
+        "http://localhost:3001/api/donation",
+        donationData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
         }
       );
-      if (response.status != 201) {
-        console.log("error posting donation");
+
+      if (response.status === 201) {
+        toast.success("Donation submitted successfully!");
+      } else {
+        throw new Error("Failed to submit donation.");
       }
-      alert(
-        "Donation submitted successfully! thank you for your generous donation"
-      );
-      toast.success("Donation submitted successfully!");
+
       setShowModal(false);
-      setShowForm(false); // Ensure the form is closed after submission
-      navigate("/user-type-selection");
+      setShowForm(false); // Close the form after submission
       resetForm();
+      alert("Donation submitted successfully!");
+      navigate("/donor"); // Navigate to donor.js after successful donation
     } catch (error) {
       toast.error("Failed to submit donation.");
     }
@@ -66,29 +102,31 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
     setShelfLife("");
     setPicture(null);
     setPreviewImage(null);
+    setLocation(""); // Reset location input
   };
 
   const handlePictureChange = (event) => {
     const file = event.target.files[0];
-    setPicture(file); // Store the actual file
+    setPicture(file);
 
-    // Create a URL to display the image preview locally
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPreviewImage(reader.result); // Only set the preview, not the file itself
+      setPreviewImage(reader.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setShowForm(false);
+    navigate("/donor"); // Navigate to donor.js when the modal is closed
   };
 
   return (
     <div className="container custom-modal">
       <Modal
         show={showModal}
-        onHide={() => {
-          setShowModal(false);
-          setShowForm(false);
-          navigate(`/donate`);
-        }}
+        onHide={handleClose}
       >
         <Modal.Header closeButton>
           <Modal.Title>Donate Food Items</Modal.Title>
@@ -141,7 +179,19 @@ const DonateForm = ({ request, requestId, setShowForm }) => {
                     type="file"
                     onChange={handlePictureChange}
                     className="form-control"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">
+                    <FaMapMarkerAlt className="me-2" /> Location (Landmark):
+                  </label>
+                  <input
+                    type="text"
+                    value={location || ""}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="form-control"
                     required
+                    placeholder="Enter a landmark or location"
                   />
                 </div>
               </div>

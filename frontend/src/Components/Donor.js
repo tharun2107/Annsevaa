@@ -43,7 +43,8 @@ const DonorPage = () => {
 
     const [activeRequests, setActiveRequests] = useState([]);
     const [activeOrganizations, setActiveOrganizations] = useState([]);
-    const [activeForm, setActiveForm] = useState(null);
+    const [showDonateForm, setShowDonateForm] = useState(false); // State to manage DonateForm visibility
+    const [currentDonationData, setCurrentDonationData] = useState(null); // Store donation data
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,6 +70,7 @@ const DonorPage = () => {
 
                 setActiveRequests(requests);
                 setActiveOrganizations(organizations);
+             
             } catch (error) {
                 console.error("Error fetching donation data:", error);
             }
@@ -76,6 +78,20 @@ const DonorPage = () => {
 
         fetchData();
     }, []);
+
+    const handleDonateClick = (data) => {
+        console.log("Data clicked:", data);  // Log the data to verify it's being passed correctly
+        setCurrentDonationData(data);
+        setShowDonateForm(true); // Show the DonateForm on button click
+    };
+
+    const closeDonateForm = () => {
+        setShowDonateForm(false); // Close the DonateForm
+    };
+
+    useEffect(() => {
+        console.log("Current Donation Data Updated:", currentDonationData);
+    }, [currentDonationData]);  // Log when currentDonationData is updated
 
     return (
         <div className="donor-page">
@@ -89,7 +105,6 @@ const DonorPage = () => {
                         <Popup>Donor Location</Popup>
                     </Marker>
                     {[...activeRequests, ...activeOrganizations].map((loc) => {
-                        // Check if loc.lat and loc.lng are valid numbers
                         if (loc.lat && loc.lng) {
                             const icon = loc.type === "organization" ? orgIcon : requestIcon;
                             return (
@@ -98,7 +113,7 @@ const DonorPage = () => {
                                 </Marker>
                             );
                         }
-                        return null; // Skip invalid locations
+                        return null;
                     })}
                 </MapContainer>
             </div>
@@ -109,11 +124,12 @@ const DonorPage = () => {
                     {activeRequests.map((item) => (
                         item._id ? (
                             <li key={item._id} className="request">
-                                <h4>{item.name || "Request"}</h4>
+                                <h4>{item.receiverName || "Request"}</h4>
                                 <p>Quantity: {item.quantity}</p>
-                                <p>Phone: {item.phone}</p>
-                                <p>Receiver ID: {item.receiverId}</p>
-                                <p>Created At: {new Date(item.createdAt).toLocaleString()}</p>
+                                <p>Phone: {item.receiverPhone}</p>
+                                <p>Address: {item.receiverAddress}</p>
+                                <p>Requested At: {new Date(item.createdAt).toLocaleString()}</p>
+                                <button onClick={() => handleDonateClick(item)}>Donate</button>
                             </li>
                         ) : null
                     ))}
@@ -127,13 +143,24 @@ const DonorPage = () => {
                                 <h4>{item.name || "Organization"}</h4>
                                 <p>Phone: {item.phone}</p>
                                 <p>Is Active: {item.isActive ? "Yes" : "No"}</p>
+                                <button onClick={() => handleDonateClick(item)}>Donate</button>
                             </li>
                         ) : null
                     ))}
                 </ul>
             </div>
+
+            {/* Conditionally render the DonateForm */}
+            {showDonateForm && (
+  <DonateForm 
+    receiverId={currentDonationData._id} 
+    setShowForm={setShowDonateForm} 
+  />
+)}
+
         </div>
     );
 };
 
 export default DonorPage;
+

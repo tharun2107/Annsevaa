@@ -148,38 +148,7 @@ function sendOtp(phoneNumber, otp) {
     });
 }
 
-const updateUser = async (req, res) => {
-  const { name, phone, location } = req.body;
-  try {
-    if (!name && !phone && !location) {
-      return res.status(401).json({ msg: "No changes provided for updation" });
-    }
 
-    const user = await User.findById(req.user._id);
-    if (!!name) {
-      user.name = name;
-    }
-    if (!!phone) {
-      user.phone = phone;
-      // phone validation
-      // **************************
-      // ***
-      // ***          CODE
-      // ***
-      // **************************
-    }
-    if (!!location) {
-      user.location = location;
-    }
-
-    const updatedUser = await user.save();
-    res.status(200).json({ msg: "User successfully updated", updatedUser });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ msg: "Failed to update user details", error });
-  }
-};
 
 // Route to send OTP
 const SendOtp = async (req, res) => {
@@ -263,26 +232,60 @@ const login = async (req, res) => {
     res.status(500).json({ msg: "Failed to login", error });
   }
 };
-const getProfile = async (req, res) => {
-  const userId = req.user._id;
+
+const updateUser = async (req, res) => {
+  const { name, phone, location } = req.body;
   try {
-    const user = await User.findById(userId);
+    if (!name && !phone && !location) {
+      return res.status(401).json({ msg: "No changes provided for updation" });
+    }
 
-    // Constructing the abstract user object
-    const abstractUser = {
-      name: user.name,
-      phone: user.phone,
-      location: { ...user.location }, // Create a shallow copy for location
-    };
+    const user = await User.findById(req.user.id);
+    if (!!name) {
+      user.name = name;
+    }
+    if (!!phone) {
+      user.phone = phone;
+      // phone validation
+      // **************************
+      // ***
+      // ***          CODE
+      // ***
+      // **************************
+    }
+    if (!!location) {
+      user.location = location;
+    }
 
-    // Sending the response
-    res.status(200).json({
-      msg: "Retrieved user details successfully",
-      user: abstractUser, // No need for spread operator here
-    });
+    const updatedUser = await user.save();
+    res.status(200).json({ msg: "User successfully updated", updatedUser });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to retrieve user details", error });
+    return res
+      .status(400)
+      .json({ msg: "Failed to update user details", error });
   }
+};
+
+const getProfile = async (req, res) => {
+const userId = req.user.id;
+try {
+const user = await User.findById(userId);
+
+// Constructing the abstract user object
+const abstractUser = {
+name: user.name,
+phone: user.phone,
+location: { ...user.location }, // Create a shallow copy for location
+};
+
+// Sending the response
+res.status(200).json({
+msg: "Retrieved user details successfully",
+user: abstractUser, // No need for spread operator here
+});
+} catch (error) {
+res.status(500).json({ msg: "Failed to retrieve user details", error });
+}
 };
 
 module.exports = {
@@ -290,4 +293,6 @@ module.exports = {
   verifyotp,
   register,
   login,
+  updateUser,
+  getProfile,
 };
