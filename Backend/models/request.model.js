@@ -8,6 +8,14 @@ const receiverRequestSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    receiverName: { type: String, required: true },
+    receiverPhone: { type: String, required: true },
+    receiverAddress: { type: String, required: true },
+    receiverLocation: {
+      name: { type: String, required: true },
+      lat: { type: Number, required: true },
+      long: { type: Number, required: true },
+    },
     quantity: { type: Number, required: true },
     // receiverName: { type: String, required: true },
     // location: {

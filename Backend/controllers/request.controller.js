@@ -1,16 +1,31 @@
   const Request = require("../models/request.model");
 const User = require("../models/user.model");
-const Donation =require("../models/donation.model");
-  const postRequest = async (req, res) => {
+const Donation = require("../models/donation.model");
+
+
+const postRequest = async (req, res) => {
     const { quantity } = req.body;
     console.log(req.body);
 
-    try {
-      const newRequest = new Request({
-        receiverId: req.user.id,
-        quantity,
-      });
-      console.log(newRequest);
+  try {
+    const user = await User.findById(req.user.id);
+    console.log("user", user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" }); // Handle user not found
+  }
+  const newRequest = new Request({
+    receiverId: req.user.id, // Receiver ID (donor's ID or recipient's ID)
+    receiverName: user.name, // Assuming `user.name` is available
+    receiverPhone: user.phone, // Assuming `user.phone` is available
+    receiverAddress: user.location.landmark, // Assuming `user.address` is available
+    receiverLocation: {
+        name: user.location.landmark, // Assuming `user.locationName` is available
+        lat: user.location.lat,   // Assuming `user.locationLat` is available
+        long: user.location.long, // Assuming `user.locationLong` is available
+    },
+    quantity, // Quantity from the request payload
+});
+      console.log("new Request",  newRequest);
 
       const savedRequest = await newRequest.save();
       res
@@ -25,6 +40,7 @@ const Donation =require("../models/donation.model");
     try {
       // Await the results of the database queries
       const requests = await Request.find();
+      //console.log(requests);
       const organizations = await User.find({ role: "receiver" ,isActive: true});
   
       // Log the results to ensure they are retrieved correctly

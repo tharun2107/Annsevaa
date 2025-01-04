@@ -1,47 +1,50 @@
 const errorHandler = require("express-async-handler");
 const Donation = require("../models/donation.model");
-
+const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const Request = require("../models/request.model");
 const path = require("path");
 
 const postDonation = errorHandler(async (req, res) => {
   const { quantity, receiverId, shelfLife, location } = req.body;
-    console.log(req.body);
+
   try {
     const user = req.user;
-  const donorId = user.id;
-  console.log("Donor ID:", donorId);
+    const donorId = user.id;
 
-  // Image validation (optional)
-  // You can add checks for supported image formats and size limits
-  let pictureUrl = null;
-  if (req.file) {
-    // Construct the URL for the image
-    pictureUrl = path.join("/images", req.file.filename); // Relative path to the image
-  }
+    let receiverObjectId = null;
 
-  // If no specific request is associated
-  const newDonation = new Donation({
-    donorId,
-    location,
-    quantity,
-    shelfLife,
-    receiverId,
-    //needVolunteer: volunteer,
-    // pictureUrl,
-  });
+    // Convert receiverId to ObjectId if provided
+    if (receiverId) {
+      if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+        return res.status(400).json({ msg: "Invalid receiverId" });
+      }
+      receiverObjectId = new mongoose.Types.ObjectId(receiverId);
+    }
 
-  const savedDonation = await newDonation.save();
+    let pictureUrl = null;
+    if (req.file) {
+      pictureUrl = path.join("/images", req.file.filename);
+    }
 
-  res.status(201).json({ msg: "Donation request sent successfully", savedDonation });
-  }
-  catch (err) {
-    //console.error("Error creating donation:", error);
-    res.status(400).json({ msg: "Error creating donation", error });
+    const newDonation = new Donation({
+      donorId,
+      location,
+      quantity,
+      shelfLife,
+      receiverId: receiverObjectId, // Use the converted ObjectId
+      needVolunteer: false,
+      pictureUrl,
+    });
+
+    const savedDonation = await newDonation.save();
+
+    res.status(201).json({ msg: "Donation request sent successfully", savedDonation });
+  } catch (err) {
+    console.error("Error creating donation:", err);
+    res.status(400).json({ msg: "Error creating donation", error: err.message });
   }
 });
-
 const deleteDonation = async (req, res) => {
   const donationId = req.params.id;
   try {

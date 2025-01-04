@@ -94,7 +94,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use("/api/auth", authRoutes);
 
 // Apply validateToken middleware for protected routes
-// app.use("/api/user", validateToken, userRoutes);
+app.use("/api/user", validateToken, userRoutes);
 app.use("/api/requests", validateToken, requestRoutes);
 app.use("/api/donation", validateToken, donationRoutes);
 

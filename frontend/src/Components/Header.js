@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { useAuth } from './context/AuthProvider';
+import ProfileCardModal from "./ProfileCard";
 import "./styles/Header.css";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
   const location = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false); // Set loading to false after checking user
+  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -16,10 +25,22 @@ const Header = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    // setUser(null);
     localStorage.removeItem("user");
+    setUser(null);
     navigate("/login");
   };
+
+  const openProfileModal = () => {
+    setIsProfileModalOpen(true);
+  };
+
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading message or spinner
+  }
 
   return (
     <header className="header">
@@ -32,14 +53,9 @@ const Header = () => {
           {user ? (
             <>
               {user.isAdmin ? (
-                <>
-                  <li>
-                    <Link to="/admin">Admin Panel</Link>
-                  </li>
-                  {/* <li>
-                    <Link to="/user-requests">User Requests</Link>
-                  </li> */}
-                </>
+                <li>
+                  <Link to="/admin">Admin Panel</Link>
+                </li>
               ) : (
                 <>
                   <li>
@@ -71,6 +87,11 @@ const Header = () => {
                   </li>
                 </>
               )}
+              <li>
+                <button className="profile-button" onClick={openProfileModal}>
+                  Profile
+                </button>
+              </li>
               <li>
                 <button className="logout-button" onClick={logout}>
                   Logout
@@ -104,6 +125,7 @@ const Header = () => {
           )}
         </ul>
       </nav>
+      <ProfileCardModal isOpen={isProfileModalOpen} closeModal={closeProfileModal} />
     </header>
   );
 };
