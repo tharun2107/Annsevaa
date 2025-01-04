@@ -74,10 +74,10 @@ const Header = () => {
                     <Link to="/contactus">Contact</Link>
                   </li>
                   <li>
-                    <Link to="/request">Receive</Link>
+                    <Link to="/receiver">Receive</Link>
                   </li>
                   <li>
-                    <Link to="/donate">Donate</Link>
+                    <Link to="/donor">Donate</Link>
                   </li>
                   <li>
                     <Link to="/volunteer">Volunteer</Link>

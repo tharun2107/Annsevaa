@@ -3,20 +3,26 @@ const router = express.Router();
 const {
   acceptDonation,
   getActiveRequests,
-  deleteRequest,
+  deletedRequest,
   postRequest,
-  get,
-  getDonations
+  getActiveDonation,
+  rejectDonation,
 } = require("../controllers/request.controller");
 
-// to display all the active requests and organizations to the donor
+// Display all the active requests and organizations to the donor
 router.get("/", getActiveRequests);
 
-// receiver making a request
+// Receiver making a request
 router.post("/", postRequest);
-router.post("/accept", acceptDonation);
-// when receiver decides to stop a particular request.
-// router.delete("/:id", deleteRequest);
-router.get("/getDonation", getDonations);
 
+// Receiver accepting a donation
+router.post("/accept", acceptDonation);
+
+// Fetch active donation details for a receiver
+router.get("/getDonation", getActiveDonation);
+
+// When receiver decides to stop a particular request
+router.delete("/:id", deletedRequest);
+
+router.post("/reject", rejectDonation);
 module.exports = router;
