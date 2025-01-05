@@ -77,13 +77,13 @@ const postRequest = async (req, res) => {
 }
  
 
-    const savedRequest = await newRequest.save();
-    res.status(200).json({ msg: "Request Sent successfully", request: savedRequest });
-  } catch (error) {
-    console.error("Error creating request:", error);
-    res.status(400).json({ msg: "Error creating request", error });
-  }
-};
+//     const savedRequest = await newRequest.save();
+//     res.status(200).json({ msg: "Request Sent successfully", request: savedRequest });
+//   } catch (error) {
+//     console.error("Error creating request:", error);
+//     res.status(400).json({ msg: "Error creating request", error });
+//   }
+// };
 
 // Get all active requests and organizations
 // const getActiveRequests = async (req, res) => {

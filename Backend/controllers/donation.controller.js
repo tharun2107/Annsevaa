@@ -170,10 +170,49 @@ const getDonations = async (req, res) => {
   }
 };
 
+
+const donarAccept = async (req, res) => {
+  console.log(req.user.id); // Debugging the user id
+  try {
+    // Query donations using donorId
+    const donations = await Donation.find({ donorId: req.user.id });
+    console.log(donations); // Debugging the response
+
+    if (donations.length === 0) {
+      return res.status(404).json({ msg: "No donations found for this donor" });
+    }
+
+    // Filter donations based on status
+    const matchedDonations = donations.filter(donation => 
+      donation.status === "approved" || donation.status === "pickbyreceiver" || donation.status === "rejected"
+    );
+
+    if (matchedDonations.length === 0) {
+      return res.status(200).json({
+        msg: "No donations with the required status found",
+        donations: matchedDonations
+      });
+    }
+
+    // Return all matching donations
+    return res.status(200).json({
+      msg: "Fetched Donations with required status",
+      donations: matchedDonations
+    });
+
+  } catch (err) {
+    console.error("Error accepting donation:", err);
+    res.status(500).json({ msg: "Error accepting donation", error: err });
+  }
+};
+
+
+
 module.exports = {
   postDonation,
   deleteDonation,
   acceptDonation,
   getDonations,
   assignVolunteer,
+  donarAccept
 };

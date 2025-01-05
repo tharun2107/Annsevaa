@@ -5,7 +5,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import DonateForm from "./DonateForm";
 import "./styles/Donor.css";
 import axios from "axios";
-
+import AcceptDonation from "./AcceptDonation";
 // Custom marker icons
 const donorIcon = new L.Icon({
     iconUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/blood-donation-location-10321765-8355310.png",
@@ -116,7 +116,12 @@ const DonorPage = () => {
                         return null;
                     })}
                 </MapContainer>
+                <div>
+            <AcceptDonation />
             </div>
+            </div>
+            
+                
 
             <div className="requests-container">
                 <h3>Active Requests</h3>

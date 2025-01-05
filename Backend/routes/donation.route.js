@@ -6,7 +6,8 @@ const {
   deleteDonation,
   acceptDonation,
   assignVolunteer,
-  getDonations
+  getDonations,
+  donarAccept
 } = require("../controllers/donation.controller");
 const router = express.Router();
 
@@ -38,4 +39,5 @@ router.put("/volunteer/:id", assignVolunteer);
 // for showing all the donations requiring a volunteer, to volunteer
 router.get("/volunteer", getDonations);
 
+router.get("/", donarAccept);
 module.exports = router;

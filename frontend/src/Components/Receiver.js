@@ -97,6 +97,8 @@ export const Receiver = () => {
   };
 
   const handleRequestFood = async () => {
+    alert("Requesting food");
+    
     if (!requestQuantity || isNaN(requestQuantity) || requestQuantity <= 0) {
       setResponseMessage("Please enter a valid quantity.");
       setResponseColor("red");
@@ -113,7 +115,8 @@ export const Receiver = () => {
           },
         }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
+        console.log("response.data.message", response.data.request);
         setResponseMessage("Food request submitted successfully.");
         setResponseColor("green");
         setRequestQuantity(""); // Reset the input field
