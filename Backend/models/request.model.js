@@ -17,6 +17,7 @@ const receiverRequestSchema = new mongoose.Schema(
       long: { type: Number, required: true },
     },
     quantity: { type: Number, required: true },
+    isActive: { type: Boolean, default: true },
     // receiverName: { type: String, required: true },
     // location: {
       //   name: { type: String, required: true },

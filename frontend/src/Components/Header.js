@@ -7,7 +7,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,7 +15,6 @@ const Header = () => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-    setLoading(false); // Set loading to false after checking user
   }, []);
 
   const toggleMenu = () => {
@@ -38,10 +36,6 @@ const Header = () => {
     setIsProfileModalOpen(false);
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading message or spinner
-  }
-
   return (
     <header className="header">
       <div className="logo">Anadh Seva</div>
@@ -52,41 +46,24 @@ const Header = () => {
         <ul className={menuOpen ? "show" : ""}>
           {user ? (
             <>
-              {user.isAdmin ? (
+              {user.role === "donor" && (
                 <li>
-                  <Link to="/admin">Admin Panel</Link>
+                  <Link to="/donor">Dashboard</Link>
                 </li>
-              ) : (
-                <>
-                  <li>
-                    <Link to="/">Home</Link>
-                  </li>
-                  {location.pathname === "/" ? (
-                    <li>
-                      <a href="#foundation">About</a>
-                    </li>
-                  ) : (
-                    <li>
-                      <Link to="/aboutus">About</Link>
-                    </li>
-                  )}
-                  <li>
-                    <Link to="/contactus">Contact</Link>
-                  </li>
-                  <li>
-                    <Link to="/receiver">Receive</Link>
-                  </li>
-                  <li>
-                    <Link to="/donor">Donate</Link>
-                  </li>
-                  <li>
-                    <Link to="/volunteer">Volunteer</Link>
-                  </li>
-                  <li>
-                    <Link to="/log">Logs</Link>
-                  </li>
-                </>
               )}
+              {user.role === "receiver" && (
+                <li>
+                  <Link to="/receiver">Dashboard</Link>
+                </li>
+              )}
+              {user.role === "volunteer" && (
+                <li>
+                  <Link to="/volunteer">Dashboard</Link>
+                </li>
+              )}
+              <li>
+                <Link to="/history">History</Link>
+              </li>
               <li>
                 <button className="profile-button" onClick={openProfileModal}>
                   Profile

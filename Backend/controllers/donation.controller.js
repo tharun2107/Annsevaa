@@ -206,7 +206,78 @@ const donarAccept = async (req, res) => {
   }
 };
 
+//if volunteer accepts the donation the status is changed to pickedByVolunteer
 
+
+
+
+const updateDonationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const donation = await Donation.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!donation) {
+      return res.status(404).json({ msg: "Donation not found" });
+    }
+
+    res.status(200).json({ msg: "Donation status updated", donation });
+  } catch (err) {
+    res.status(500).json({ msg: "Error updating donation status", error: err });
+  }
+};
+
+// donor wants to self volunteer then status will be updated to pickbydonor
+const markAsSelfVolunteer = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const donation = await Donation.findByIdAndUpdate(id, { status: "pickbydonor" }, { new: true });
+
+    if (!donation) {
+      return res.status(404).json({ msg: "Donation not found" });
+    }
+
+    res.status(200).json({ msg: "Donation status updated to pickbydonor", donation });
+  } catch (err) {
+    res.status(500).json({ msg: "Error updating donation status", error: err });
+  }
+};
+
+const confirmPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const donation = await Donation.findByIdAndUpdate(id, { status: "completed" }, { new: true });
+
+    if (!donation) {
+      return res.status(404).json({ msg: "Donation not found" });
+    }
+
+    res.status(200).json({ msg: "Donation status marked as completed", donation });
+  } catch (err) {
+    res.status(500).json({ msg: "Error confirming pickup", error: err });
+  }
+};
+
+const needVolunteer = async (req,res)=>{
+  const {id} = req.params;
+  console.log(id)
+  try{
+    const donation = await Donation.findById(id);
+    if(!donation){
+      return res.status(404).json({msg:"Donation not found"});
+    }
+    
+    donation.needVolunteer = true;
+    await donation.save();
+    res.status(200).json({msg:"Donation marked as needing volunteer",donation});
+  }
+  catch(err){
+    res.status(500).json({msg:"Error updating needVolunteer",error:err});
+  }
+}
 
 module.exports = {
   postDonation,
@@ -214,5 +285,11 @@ module.exports = {
   acceptDonation,
   getDonations,
   assignVolunteer,
-  donarAccept
+  donarAccept,
+ 
+  updateDonationStatus,
+  markAsSelfVolunteer,
+  confirmPickup,
+  needVolunteer,
+  
 };

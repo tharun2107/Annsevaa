@@ -7,7 +7,13 @@ const {
   acceptDonation,
   assignVolunteer,
   getDonations,
-  donarAccept
+  donarAccept,
+  
+  updateDonationStatus,
+  markAsSelfVolunteer,
+  confirmPickup,
+  needVolunteer,
+  DonationPickedByVolunteer
 } = require("../controllers/donation.controller");
 const router = express.Router();
 
@@ -39,5 +45,20 @@ router.put("/volunteer/:id", assignVolunteer);
 // for showing all the donations requiring a volunteer, to volunteer
 router.get("/volunteer", getDonations);
 
+
 router.get("/", donarAccept);
+
+// Update donation status route
+router.patch('/:id/status', updateDonationStatus);
+// Mark as self volunteer route by donor updates as pickbydonor
+router.patch('/donation/:id/self-volunteer', markAsSelfVolunteer);
+
+//confirm status has completed by donar(food accepted by volunteer) when volunter had came  to donar (pick by receiver ==>  fulfilled)
+router.patch('/:id/confirm', confirmPickup);
+
+//donar requires a volunteer ==> needvolunteer : true
+router.patch("/need-volunteer/:id",needVolunteer)
+
+
+
 module.exports = router;

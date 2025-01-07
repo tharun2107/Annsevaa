@@ -1,7 +1,7 @@
 const Request = require("../models/request.model");
 const User = require("../models/user.model");
 const Donation = require("../models/donation.model");
- 
+ const ReceiverRequest = require("../models/request.model");
 
 
 const postRequest = async (req, res) => {
@@ -35,7 +35,7 @@ const postRequest = async (req, res) => {
     } catch (error) {
       res.status(400).json({ msg: "Error creating request", error });
     }
-  };
+  };  
 
   const getActiveRequests = async (req, res) => {
     try {
@@ -62,7 +62,7 @@ const postRequest = async (req, res) => {
     // console.log(user);
     console.log(req.user)
     try {
-        const donation = await Donation.find({ donorId: req.user.id, status: "pending" });
+        const donation = await Donation.find({ receiverId: req.user.id, status: "pending" });
         
         if (!donation || donation.length === 0) {
             return res.status(404).json("Donation not available");
@@ -118,27 +118,62 @@ const deletedRequest = async (req, res) => {
   }
 };
 
-// Fetch active donation details for a receiver
+
+// const Donation = require('../models/Donation');
+// const ReceiverRequest = require('../models/ReceiverRequest');
+// const User = require('../models/User'); // Assuming the User model is located here
+
 const getActiveDonation = async (req, res) => {
   try {
-    // Fetch the donation and populate donor details
-    const donation = await Donation.findOne({ receiverId: req.user.id,status: "pending" }) //
-      .populate("donorId", "name phone location");
+    // Step 1: Fetch the pending donation
+    const donation = await Donation.findOne({
+      status: "pending", // Only find pending donations
+    });
+
+    console.log(donation);
 
     if (!donation) {
-      return res.status(404).json({ msg: "Donation not found" });
+      return res.status(404).json({ msg: "No pending donations found" });
     }
 
-    // Return the donation along with donor details
+    // Step 2: Get the receiverRequestId from the donation
+    const receiverRequestId = donation.receiverId;
+    console.log(receiverRequestId);
+
+    // Step 3: Fetch the corresponding receiver request to check the receiverId
+    const receiverRequest = await ReceiverRequest.findOne({
+      _id: receiverRequestId,
+      receiverId: req.user.id, // Check if the receiver ID matches the authenticated user's ID
+    });
+
+    if (!receiverRequest) {
+      return res.status(404).json({ msg: "No matching receiver request found for this user" });
+    }
+
+    // Step 4: Fetch the donor's details
+    const donor = await User.findById(donation.donorId); // Find the donor's details using the donorId from the donation
+
+    if (!donor) {
+      return res.status(404).json({ msg: "Donor not found" });
+    }
+
+    // Step 5: If donation and receiver request match, return both along with donor details
     res.json({
-      msg: "Donor's donation details fetched successfully",
-      donation,
+      msg: "Donation, Donor and Receiver request details fetched successfully",
+      donation: {
+        donationId: donation._id,
+        donorName: donor.name, // Donor's name
+        quantity: donation.quantity, // Donation quantity
+        location: donation.location.landmark, // Donation location
+      },
     });
   } catch (error) {
-    console.error("Error fetching active donation:", error);
-    res.status(500).json({ msg: "Error fetching donation details", error });
+    console.error("Error fetching donation or receiver request:", error);
+    res.status(500).json({ msg: "Error fetching donation or receiver request details", error });
   }
 };
+ 
+
 
 
 
@@ -175,7 +210,7 @@ const getActiveDonation = async (req, res) => {
   //   }
   // };
   const acceptDonation = async (req, res) => {
-    const { approveDonation, acceptasVolunteer } = req.body;
+    const {donationId, approveDonation, acceptasVolunteer } = req.body;
   
     try {
       if (approveDonation === undefined || acceptasVolunteer === undefined) {
@@ -183,7 +218,8 @@ const getActiveDonation = async (req, res) => {
       }
   
       // Find the donation related to the receiver
-      const donation = await Donation.findOne({ receiverId: req.user.id });
+      const donation = await Donation.findOne({ _id: donationId})
+      console.log("donation:", donation);
   
       if (!donation) {
         return res.status(404).json({ msg: "Donation not found" });
@@ -261,4 +297,5 @@ module.exports = {
   getActiveDonation,
   acceptDonation,
   rejectDonation,
+  getDonations
 };

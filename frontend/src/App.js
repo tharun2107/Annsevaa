@@ -68,6 +68,7 @@ import Header from './Components/Header';
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import {Receiver} from './Components/Receiver';
+import Volunteer from './Components/Volunteer';
 function App() {
   return (
     <BrowserRouter>
@@ -81,6 +82,7 @@ function App() {
           <Route path="/dashboard" element={<div>Dashboard</div>} />
           <Route path="/receiver" element={<Receiver />} />
           <Route path="/donor" element={<Donor/>} />
+          <Route path="/volunteer" element={<Volunteer/>} />
         </Routes>
         <ToastContainer /> {/* Add ToastContainer here */}
       </div>

@@ -21,7 +21,6 @@ export const Receiver = () => {
             },
           }
         );
-
         setDonations([response.data.donation]);
       } catch (error) {
         console.error("Error fetching donations:", error);
@@ -32,11 +31,13 @@ export const Receiver = () => {
   }, []);
 
   const handleApprove = async (donationId) => {
+    console.log(donationId);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:3001/api/requests/accept",
+        "http://localhost:3001/api/requests/accept", //http://localhost:3001/api/requests/accept
         {
+          donationId: donationId,
           approveDonation: true,
           acceptasVolunteer: volunteerStatus[donationId] || false,
         },
@@ -48,8 +49,14 @@ export const Receiver = () => {
       );
       if (response.status === 200) {
         alert("Donation approved successfully.");
+        
+        // Update the donation status to "Completed"
         setDonations((prevDonations) =>
-          prevDonations.filter((donation) => donation._id !== donationId)
+          prevDonations.map((donation) =>
+            donation._id === donationId
+              ? { ...donation, status: "Completed" } // Add a "status" field to track completion
+              : donation
+          )
         );
         setResponseMessage("Donation approved successfully.");
         setResponseColor("green");
@@ -141,7 +148,7 @@ export const Receiver = () => {
         >
           {donations.map((donation) => (
             <div
-              key={donation._id}
+              key={donation.donationId}
               style={{
                 border: "1px solid #ddd",
                 padding: "20px",
@@ -154,58 +161,65 @@ export const Receiver = () => {
             >
               <h3 style={{ color: "#333" }}>Donation Details</h3>
               <p>
-                <strong>Donor:</strong> {donation.donorId.name}
+                <strong>Donor:</strong> {donation.donorName}
               </p>
               <p>
                 <strong>Quantity:</strong> {donation.quantity}
               </p>
               <p>
-                <strong>Location:</strong> {donation.location.landmark}
+                <strong>Location:</strong> {donation.location}
               </p>
-              <label style={{ display: "block", marginTop: "10px" }}>
-                <input
-                  type="checkbox"
-                  checked={volunteerStatus[donation._id] || false}
-                  onChange={(e) =>
-                    handleVolunteerChange(donation._id, e.target.checked)
-                  }
-                />{" "}
-                I want to act as a volunteer
-              </label>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: "20px",
-                }}
-              >
-                <button
-                  onClick={() => handleApprove(donation._id)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#4caf50",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(donation._id)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#f44336",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Reject
-                </button>
-              </div>
+              {/* <p>
+                <strong>Status:</strong> {donation.status || "Pending"}
+              </p> */}
+              {donation.status !== "Completed" && (
+                <>
+                  <label style={{ display: "block", marginTop: "10px" }}>
+                    <input
+                      type="checkbox"
+                      checked={volunteerStatus[donation._id] || false}
+                      onChange={(e) =>
+                        handleVolunteerChange(donation._id, e.target.checked)
+                      }
+                    />{" "}
+                    I want to act as a volunteer
+                  </label>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: "20px",
+                    }}
+                  >
+                    <button
+                      onClick={() => handleApprove(donation.donationId)}
+                      style={{
+                        padding: "10px 20px",
+                        backgroundColor: "#4caf50",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(donation.donationId)}
+                      style={{
+                        padding: "10px 20px",
+                        backgroundColor: "#f44336",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>

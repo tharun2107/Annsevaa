@@ -32,7 +32,7 @@ const validateToken = asyncHandler(async (req, res, next) => {
     let authHeader = req.headers.authorization || req.headers.Authorization;
 
     // Log the Authorization header
-    console.log("Authorization Header:", authHeader);
+    //console.log("Authorization Header:", authHeader);
 
     if (authHeader && authHeader.startsWith("Bearer")) {
         token = authHeader.split(" ")[1];
