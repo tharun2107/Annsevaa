@@ -230,7 +230,7 @@ const getCurrentAcceptedDonation = async (req, res) => {
 const acceptDonationByVolunteer = async (req, res) => {
   const { id } = req.params; // Get donationId from request body
   //console.log("Donation ID received:", id); // Debugging log
-console.log("ID:" + id)
+  console.log("ID:" + id);
   try {
     const donation = await Donation.findByIdAndUpdate(
       id,
@@ -242,14 +242,9 @@ console.log("ID:" + id)
       { new: true } // Return the updated donation
     );
 
-    console.log("donation:"+donation);
-    // if (!donation) {
-    //   return res.status(404).json({ message: "Donation not found." });
-    // }
+    console.log("donation:" + donation);
 
-    res
-      .status(200)
-      .json({ message: "Donation accepted successfully.", donation });
+    res.status(200).json({ message: "Donation accepted successfully.", donation });
   } catch (err) {
     console.error("Error accepting donation:", err);
     res.status(500).json({ error: err.message });
@@ -259,21 +254,20 @@ console.log("ID:" + id)
 const DonationPickedByVolunteer = async (req, res) => {
   const { id } = req.params; // Get donationId from request body
   //console.log("Donation ID received:", id); // Debugging log
-
+  console.log(id);
   try {
     const donation = await Donation.findByIdAndUpdate(
       id,
       {
         status: "pickbyvolunteer",
-        needVolunteer: false, // Include all fields to update in one object
+        needVolunteer: false,
       },
-      { new: true } // Return the updated donation
+      { new: true }
     );
-
     console.log(donation);
-    // if (!donation) {
-    //   return res.status(404).json({ message: "Donation not found." });
-    // }
+    if(!donation){
+      return res.status(404).json({ message: "Donation not found." });
+    }
 
     res.status(200).json({ message: "Food picked successfully.", donation });
   } catch (err) {

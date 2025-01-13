@@ -127,10 +127,10 @@ const getActiveDonation = async (req, res) => {
   try {
     // Step 1: Fetch the pending donation
     const donation = await Donation.findOne({
-      status: "pending", // Only find pending donations
+      status: "pending", 
     });
 
-    console.log(donation);
+    console.log("donation:"+ donation);
 
     if (!donation) {
       return res.status(404).json({ msg: "No pending donations found" });

@@ -62,6 +62,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require('body-parser');
+
 const app = express();
 const PORT = 3001;
 
@@ -76,6 +77,8 @@ const requestRoutes = require("./routes/request.route.js");
 const donationRoutes = require("./routes/donation.route.js");
 const userRoutes = require("./routes/user.route.js");
 const volunteerRoutes = require("./routes/volunteer.route.js");
+const historyRoutes=require("./routes/donationHistoryRoutes.js")
+
 app.use(cors());
 app.use(express.json());
 app.use(express.json({ limit: '10mb' }));
@@ -98,6 +101,7 @@ app.use("/api/user", validateToken, userRoutes);
 app.use("/api/requests", validateToken, requestRoutes);
 app.use("/api/donation", validateToken, donationRoutes);
 app.use("/api/volunteer", validateToken, volunteerRoutes);
+app.use("/api/history", validateToken, historyRoutes);
 
 // Admin Routes (apply adminAuth for restricted access)
 // app.use("/admin", validateToken, adminAuth, adminRoutes);
