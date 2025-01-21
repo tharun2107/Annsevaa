@@ -1,79 +1,99 @@
-/* Login container styling */
+/* OTP Input Container */
+.otp-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.otp-input {
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.otp-input:focus {
+  outline: none;
+  border: 2px solid #00c6ff;
+  transform: scale(1.1);
+}
+
+/* Animated Login Form */
+.animated-form {
+  animation: slideIn 1s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* General styling adjustments */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+}
+
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
+ 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.6)
+    ),
+    url("../images/registerback.jpg") no-repeat center center / cover !important;
+  overflow: hidden;
   
-  /* Login form styling */
-  .login-form {
-    background: #fff;
-    border-radius: 10px;
-    padding: 30px 20px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
-  
-  /* Form title styling */
-  .login-form h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  /* Input field styling */
-  .input-field {
-    width: 100%;
-    padding: 10px 15px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  /* Submit button styling */
-  .submit-button {
-    width: 100%;
-    padding: 10px 15px;
-    background-color: #2575fc;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .submit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Error message styling */
-  .error-message {
-    color: red;
-    margin-top: 10px;
-    font-size: 14px;
-  }
-  
-  /* Responsive design */
-  @media screen and (max-width: 600px) {
-    .login-form {
-      padding: 20px 15px;
-    }
-  
-    .login-form h1 {
-      font-size: 20px;
-    }
-  
-    .input-field,
-    .submit-button {
-      font-size: 14px;
-    }
-  }
-  
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 40px 50px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(15px);
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 15px;
+  background: #28a745;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.submit-button:hover {
+  background: #13b138;
+  transform: translateY(-3px);
+}

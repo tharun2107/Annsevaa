@@ -1,6 +1,6 @@
-// import React, { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
 // import axios from "axios";
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
 // import "./styles/Register.css";
 
 // const Registration = () => {
@@ -8,75 +8,84 @@
 //     name: "",
 //     phone: "",
 //     email: "",
-//     role: "donor", // Default role is donor
-//     f: { landmark: "", lat: "", long: "" }, // Add default location object
+//     role: "donor",
+//     location: { landmark: "", lat: "", long: "" },
 //   });
 //   const [otp, setOtp] = useState("");
 //   const [isOtpSent, setIsOtpSent] = useState(false);
 //   const [errorMessage, setErrorMessage] = useState("");
 //   const navigate = useNavigate();
 
-//   // Function to get the user's location
 //   const getLocation = () => {
 //     if (navigator.geolocation) {
-//       navigator.geolocation.getCurrentPosition((position) => {
-//         const lat = position.coords.latitude;
-//         const long = position.coords.longitude;
-//         setFormData((prevData) => ({
-//           ...prevData,
-//           location: { ...prevData.location, lat, long },
-//         }));
-//       }, (error) => {
-//         setErrorMessage("Location access denied.");
-//       });
-//     } else {
-//       setErrorMessage("Geolocation is not supported by this browser.");
+//       navigator.geolocation.getCurrentPosition(
+//         (position) => {
+//           setFormData((prev) => ({
+//             ...prev,
+//             location: {
+//               ...prev.location,
+//               lat: position.coords.latitude,
+//               long: position.coords.longitude,
+//             },
+//           }));
+//         },
+//         () => setErrorMessage("Failed to fetch location.")
+//       );
 //     }
 //   };
 
 //   useEffect(() => {
-//     getLocation(); // Get location when the component mounts
+//     getLocation();
 //   }, []);
 
 //   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     const { name, value } = e.target;
+//     if (name === "landmark") {
+//       setFormData((prev) => ({
+//         ...prev,
+//         location: { ...prev.location, landmark: value },
+//       }));
+//     } else {
+//       setFormData((prev) => ({ ...prev, [name]: value }));
+//     }
 //   };
 
 //   const sendOtp = async () => {
 //     try {
-//       console.log(formData);
-//       await axios.post("http://localhost:3001/api/auth/sent-otp", { phone: formData.phone });
+//       console.log("Sending OTP with data:", formData);
+//       await axios.post("http://localhost:3001/api/auth/send-otp", {
+//         phone: formData.phone,
+//       });
 //       setIsOtpSent(true);
 //       setErrorMessage("");
-//     } catch (error) {
-//       setErrorMessage("Failed to send OTP");
+//     } catch (err) {
+//       setErrorMessage("Failed to send OTP.");
 //     }
 //   };
 
 //   const verifyAndRegister = async () => {
 //     try {
-//       if (!formData.role) {
-//         formData.role = "donor"; // Set to default if no role is selected
-//       }
-
 //       await axios.post("http://localhost:3001/api/auth/verify-otp", {
 //         phone: formData.phone,
 //         otp,
 //       });
-//       console.log("otp verirfied");
-//       console.log(formData);
-//       const response = await axios.post("http://localhost:3001/api/auth/register", formData);
+
+//       const response = await axios.post(
+//         "http://localhost:3001/api/auth/register",
+//         formData
+//       );
 //       localStorage.setItem("token", response.data.token);
 //       localStorage.setItem("user", JSON.stringify(response.data.user));
 //       setErrorMessage("");
 //       navigate("/dashboard");
-//     } catch (error) {
-//       setErrorMessage(error.response?.data?.msg || "Failed to register");
+//     } catch (err) {
+//       setErrorMessage(err.response?.data?.msg || "Failed to register.");
 //     }
 //   };
 
 //   return (
 //     <div className="registration-container">
+//     <div className="registration-form">
 //       <h1>Registration</h1>
 //       <input
 //         type="text"
@@ -103,26 +112,19 @@
 //         className="input-field"
 //       />
 //       <input
-//   type="text"
-//   name="landmark"
-//   placeholder="Landmark"
-//   value={formData.location.landmark}
-//   onChange={(e) =>
-//     setFormData((prevData) => ({
-//       ...prevData,
-//       location: { ...prevData.location, landmark: e.target.value },
-//     }))
-//   }
-//   className="input-field"
-// />
-
+//         type="text"
+//         name="landmark"
+//         placeholder="Landmark"
+//         value={formData.location.landmark}
+//         onChange={handleChange}
+//         className="input-field"
+//       />
 //       <select
 //         name="role"
 //         value={formData.role}
 //         onChange={handleChange}
 //         className="input-field"
 //       >
-//         <option value="">Select Role</option>
 //         <option value="donor">Donor</option>
 //         <option value="receiver">Receiver</option>
 //         <option value="volunteer">Volunteer</option>
@@ -143,20 +145,20 @@
 //         </>
 //       ) : (
 //         <button onClick={sendOtp} className="submit-button">
-//           Submit
+//           Send OTP
 //         </button>
 //       )}
 
 //       {errorMessage && <p className="error-message">{errorMessage}</p>}
 //     </div>
+//     </div>
 //   );
 // };
 
 // export default Registration;
-
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./styles/Register.css";
 
 const Registration = () => {
@@ -164,70 +166,67 @@ const Registration = () => {
     name: "",
     phone: "",
     email: "",
-    role: "donor", // Default role is donor
-    location: { landmark: "", lat: "", long: "" }, // Correct key for location
+    role: "donor",
+    location: { landmark: "", lat: "", long: "" },
   });
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  // Function to get the user's location
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const lat = position.coords.latitude;
-          const long = position.coords.longitude;
-          setFormData((prevData) => ({
-            ...prevData,
-            location: { ...prevData.location, lat, long },
+          setFormData((prev) => ({
+            ...prev,
+            location: {
+              ...prev.location,
+              lat: position.coords.latitude,
+              long: position.coords.longitude,
+            },
           }));
         },
-        (error) => {
-          setErrorMessage("Location access denied.");
-        }
+        () => setErrorMessage("Failed to fetch location.")
       );
-    } else {
-      setErrorMessage("Geolocation is not supported by this browser.");
     }
   };
 
   useEffect(() => {
-    getLocation(); // Get location when the component mounts
+    getLocation();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "landmark") {
-      setFormData((prevData) => ({
-        ...prevData,
-        location: { ...prevData.location, landmark: value },
+      setFormData((prev) => ({
+        ...prev,
+        location: { ...prev.location, landmark: value },
       }));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const sendOtp = async () => {
+    setIsLoading(true); // Show loading spinner
     try {
-      console.log(formData)
+      console.log("Sending OTP with data:", formData);
       await axios.post("http://localhost:3001/api/auth/send-otp", {
         phone: formData.phone,
       });
       setIsOtpSent(true);
       setErrorMessage("");
-    } catch (error) {
-      setErrorMessage("Failed to send OTP");
+    } catch (err) {
+      setErrorMessage("Failed to send OTP.");
+    } finally {
+      setIsLoading(false); // Hide loading spinner
     }
   };
 
   const verifyAndRegister = async () => {
     try {
-      if (!formData.role) {
-        formData.role = "donor"; // Set to default if no role is selected
-      }
-
       await axios.post("http://localhost:3001/api/auth/verify-otp", {
         phone: formData.phone,
         otp,
@@ -241,78 +240,90 @@ const Registration = () => {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setErrorMessage("");
       navigate("/dashboard");
-    } catch (error) {
-      setErrorMessage(error.response?.data?.msg || "Failed to register");
+    } catch (err) {
+      setErrorMessage(err.response?.data?.msg || "Failed to register.");
     }
   };
 
   return (
     <div className="registration-container">
-      <h1>Registration</h1>
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={formData.name}
-        onChange={handleChange}
-        className="input-field"
-      />
-      <input
-        type="text"
-        name="phone"
-        placeholder="Phone"
-        value={formData.phone}
-        onChange={handleChange}
-        className="input-field"
-      />
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        className="input-field"
-      />
-      <input
-        type="text"
-        name="landmark"
-        placeholder="Landmark"
-        value={formData.location.landmark}
-        onChange={handleChange}
-        className="input-field"
-      />
-      <select
-        name="role"
-        value={formData.role}
-        onChange={handleChange}
-        className="input-field"
-      >
-        <option value="">Select Role</option>
-        <option value="donor">Donor</option>
-        <option value="receiver">Receiver</option>
-        <option value="volunteer">Volunteer</option>
-      </select>
-
-      {isOtpSent ? (
-        <>
+      {isLoading ? ( // Conditionally render the loading UI
+        <div className="registration-form">
+          <div className="spinner"></div>
+          <h2>⏳ Just a Moment!</h2>
+          <p>
+            Good things take time. Your OTP is on its way and will arrive
+            shortly...
+          </p>
+        </div>
+      ) : (
+        <div className="registration-form">
+          <h1>Registration</h1>
           <input
             type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
             className="input-field"
           />
-          <button onClick={verifyAndRegister} className="submit-button">
-            Verify & Register
-          </button>
-        </>
-      ) : (
-        <button onClick={sendOtp} className="submit-button">
-          Submit
-        </button>
-      )}
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="input-field"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="input-field"
+          />
+          <input
+            type="text"
+            name="landmark"
+            placeholder="Landmark"
+            value={formData.location.landmark}
+            onChange={handleChange}
+            className="input-field"
+          />
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="input-field"
+          >
+            <option value="donor">Donor</option>
+            <option value="receiver">Receiver</option>
+            <option value="volunteer">Volunteer</option>
+          </select>
 
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+          {isOtpSent ? (
+            <>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="input-field"
+              />
+              <button onClick={verifyAndRegister} className="submit-button">
+                Verify & Register
+              </button>
+            </>
+          ) : (
+            <button onClick={sendOtp} className="submit-button">
+              Send OTP
+            </button>
+          )}
+
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </div>
+      )}
     </div>
   );
 };

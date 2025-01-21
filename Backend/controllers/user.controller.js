@@ -205,10 +205,10 @@ const register = async (req, res) => {
     });
 
     await user.save();
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id,role:role}, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.status(201).json({ msg: "User registered successfully", token, user });
+    res.status(201).json({ msg: "User registered successfully", token, user,role:role });
   } catch (error) {
     res.status(500).json({ msg: "Failed to register user", error });
   }
@@ -223,11 +223,11 @@ const login = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id,role:role }, process.env.JWT_SECRET, {
       expiresIn: "5h",
     });
 
-    res.status(200).json({ msg: "Login successful", token, user });
+    res.status(200).json({ msg: "Login successful", token, user,role:user.role });
   } catch (error) {
     res.status(500).json({ msg: "Failed to login", error });
   }

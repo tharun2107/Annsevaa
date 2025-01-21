@@ -9,9 +9,11 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
   const [editedUser, setEditedUser] = useState({ location: {} });
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state for saving
+  const [isFetching, setIsFetching] = useState(false); // Loading state for fetching
 
   useEffect(() => {
     const fetchProfile = async () => {
+      setIsFetching(true); // Start loading state
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -27,11 +29,12 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
         setUser(response.data.user);
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
+        setIsFetching(false); // End loading state
       }
     };
 
     if (isOpen) {
-      setUser(null);
       fetchProfile();
     }
   }, [isOpen]);
@@ -117,12 +120,12 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
     setIsLoading(false);
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
+  if (!isOpen || isFetching) {
+    return null; // Render nothing if modal is closed or fetching data
   }
 
   return (
-    isOpen && (
+    isOpen && user && (
       <div className="modal-overlay" onClick={closeModal}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="profile-header">

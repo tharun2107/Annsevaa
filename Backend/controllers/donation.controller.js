@@ -279,6 +279,37 @@ const needVolunteer = async (req,res)=>{
   }
 }
 
+// Controller to handle donation updates
+const donate = async (req, res) => {
+  try {
+      const { quantityDonated } = req.body; // Get quantity donated from the request body
+      const { requestId } = req.params; // Get the request ID from params
+
+      // Find the request by ID
+      const request = await Request.findById(requestId);
+      if (!request) {
+          return res.status(404).json({ message: "Request not found" });
+      }
+
+      let remainingQuantity = request.quantity - quantityDonated;
+
+      // Update the request with the remaining quantity or deactivate if fully donated
+      if (remainingQuantity > 0) {
+          request.quantity = remainingQuantity;
+          request.isActive = true;  // Keep the request active
+          await request.save();
+          return res.json({ message: "Donation successfully added", remainingQuantity });
+      } else {
+          request.quantity = 0;
+          request.isActive = false;  // Deactivate the request if fully donated
+          await request.save();
+          return res.json({ message: "Donation fully completed, request closed", remainingQuantity: 0 });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error" });
+  }
+};
 module.exports = {
   postDonation,
   deleteDonation,
@@ -286,7 +317,7 @@ module.exports = {
   getDonations,
   assignVolunteer,
   donarAccept,
- 
+ donate,
   updateDonationStatus,
   markAsSelfVolunteer,
   confirmPickup,

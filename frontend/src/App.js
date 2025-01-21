@@ -69,6 +69,11 @@ import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import {Receiver} from './Components/Receiver';
 import Volunteer from './Components/Volunteer';
+import { DonorHistory } from './Components/DonarHistory';
+import { ReceiverHistory } from './Components/ReceiverHistory';
+import { VolunteerHistory } from './Components/VolunteerHistory';
+import AdminDashboard from "./Components/AdminDashboard"
+import  Contact from "./Components/Contact"
 function App() {
   return (
     <BrowserRouter>
@@ -76,13 +81,17 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-         
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/contactus" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<UserRegistration />} />
-          <Route path="/dashboard" element={<div>Dashboard</div>} />
+          {/* <Route path="/dashboard" element={<div>Dashboard</div>} /> */}
           <Route path="/receiver" element={<Receiver />} />
           <Route path="/donor" element={<Donor/>} />
           <Route path="/volunteer" element={<Volunteer/>} />
+           <Route path="/donor/history" element={<DonorHistory />} />
+          <Route path="/receiver/history" element={<ReceiverHistory />} />
+          <Route path="/volunteer/history" element={<VolunteerHistory />} />
         </Routes>
         <ToastContainer /> {/* Add ToastContainer here */}
       </div>

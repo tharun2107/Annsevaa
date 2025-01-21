@@ -1,47 +1,191 @@
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("../images/loginback.jpg") no-repeat center center / cover !important;
+}
 
+/* Split Layout for Container */
 .registration-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
-  background-color: #f0fdf4;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  min-height: 100vh;
+  flex-wrap: wrap; /* For responsiveness */
 }
 
-h1 {
-  color: #047857;
+/* Form Section (Left Side) */
+.registration-form {
+  flex: 1;
+  max-width: 40%; /* Adjust form width */
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 40px 50px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(15px);
+  margin: 20px; /* Add spacing for mobile */
 }
 
+/* Title Styling */
+.registration-form h1 {
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: #fff;
+}
+
+/* Input Field Styling */
 .input-field {
-  width: 100%;
-  padding: 10px;
+  width: 100% !important;
+  padding: 15px;
   margin: 10px 0;
-  border: 1px solid #d1fae5;
-  border-radius: 5px;
-  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
+.input-field:focus {
+  outline: none;
+  border: 2px solid #00c6ff;
+}
+
+/* Submit Button Styling */
 .submit-button {
-  background-color: #047857;
-  color: white;
-  padding: 10px;
+  width: 100%;
+  padding: 15px;
+  background: #28a745;
   border: none;
-  border-radius: 5px;
+  color: #fff;
+  font-size: 1.2rem;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
 .submit-button:hover {
-  background-color: #065f46;
+  background: #13b138;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Error Message Styling */
 .error-message {
-  color: #b91c1c;
+  color: #ff4d4d;
+  font-size: 0.9rem;
   margin-top: 10px;
-  font-size: 14px;
+}
+
+/* Image and Quote Section (Right Side) */
+.registration-image {
+  flex: 1;
+  max-width: 50%; /* Restrict image width */
+  height: auto;
+  position: relative;
+  background: url("../images/loginback.jpg") no-repeat center center / cover !important;
+  margin: 20px; /* Add spacing for mobile */
+}
+
+/* Quote Styling */
+.registration-image .quote {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
   text-align: center;
+  font-size: 2.5rem;
+  padding: 20px;
+  border-radius: 10px;
+  font-weight: bold;
+ 
+  animation: fadeIn 3s ease-in-out;
+}
+
+/* Responsive Styles */
+
+/* Small Devices (Tablets and Mobiles: width <= 768px) */
+@media (max-width: 768px) {
+  /* Stack the layout vertically */
+  .registration-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Form Section */
+  .registration-form {
+    max-width: 90%; /* Form takes full width */
+  }
+
+  /* Image Section */
+  .registration-image {
+    max-width: 100%; /* Image takes full width */
+    height: 250px; /* Fixed height for smaller devices */
+  }
+
+  /* Quote */
+  .registration-image .quote {
+    font-size: 1.8rem; /* Smaller quote text */
+    padding: 15px;
+  }
+}
+
+/* Extra Small Devices (Mobiles: width <= 480px) */
+@media (max-width: 480px) {
+  .registration-form h1 {
+    font-size: 2rem; /* Smaller title size */
+  }
+
+  .input-field {
+    font-size: 0.9rem; /* Adjust input font size */
+    padding: 10px;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .registration-image .quote {
+    font-size: 1.5rem; /* Smaller quote text */
+  }
+}
+
+/* Loading Message Styling */
+.loading-message {
+  text-align: center;
+  margin-top: 20%;
+}
+
+.loading-message h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.loading-message p {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+/* Spinner Styling */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top: 6px solid #fff;
+  border-radius: 50%;
+  margin: 20px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

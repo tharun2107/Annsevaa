@@ -7,7 +7,9 @@ const {
   postRequest,
   getActiveDonation,
   rejectDonation,
+  completeDonation,
 } = require("../controllers/request.controller");
+
 
 // Display all the active requests and organizations to the donor
 router.get("/", getActiveRequests);
@@ -26,5 +28,6 @@ router.delete("/:id", deletedRequest);
 
 router.post("/reject", rejectDonation);
 
+router.post("/completed",completeDonation);
 
 module.exports = router;

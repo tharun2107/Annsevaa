@@ -9,10 +9,11 @@ const postRequest = async (req, res) => {
     console.log(req.body);
 
   try {
+    
     const user = await User.findById(req.user.id);
     console.log("user", user);
     if (!user) {
-      return res.status(404).json({ message: "User not found" }); // Handle user not found
+      return res.status(400).json({sucess:false, message: "User not found" }); // Handle user not found
   }
   const newRequest = new Request({
     receiverId: req.user.id, // Receiver ID (donor's ID or recipient's ID)
@@ -30,10 +31,10 @@ const postRequest = async (req, res) => {
 
       const savedRequest = await newRequest.save();
       res
-        .status(201)
-        .json({ msg: "Request added successfully", request: savedRequest });
+        .status(200)
+        .json({success:true, message: "Request added successfully", request: savedRequest });
     } catch (error) {
-      res.status(400).json({ msg: "Error creating request", error });
+      res.status(500).json({ msg: "Error creating request", error });
     }
   };  
 
@@ -65,7 +66,7 @@ const postRequest = async (req, res) => {
         const donation = await Donation.find({ receiverId: req.user.id, status: "pending" });
         
         if (!donation || donation.length === 0) {
-            return res.status(404).json("Donation not available");
+            return res.status(400).json("Donation not available");
         }
         res.status(200).json(donation);
     } catch (err) {
@@ -108,7 +109,7 @@ const deletedRequest = async (req, res) => {
     const request = await Request.findByIdAndDelete(req.params.id);
 
     if (!request) {
-      return res.status(404).json({ msg: "Request not found" });
+      return res.status(400).json({ msg: "Request not found" });
     }
 
     res.status(200).json({ msg: "Request successfully deleted", deletedRequest: request });
@@ -125,53 +126,50 @@ const deletedRequest = async (req, res) => {
 
 const getActiveDonation = async (req, res) => {
   try {
-    // Step 1: Fetch the pending donation
+    // Step 1: Fetch the pending donation for the logged-in receiver
     const donation = await Donation.findOne({
-      status: "pending", 
+      status: "pending",
+      receiverId: req.user.id, // Match the receiver ID with the logged-in user
     });
-
-    console.log("donation:"+ donation);
 
     if (!donation) {
-      return res.status(404).json({ msg: "No pending donations found" });
+      return res.status(204).json({
+        success: true,
+        message: "No pending donations found for the logged-in receiver.",
+      });
     }
 
-    // Step 2: Get the receiverRequestId from the donation
-    const receiverRequestId = donation.receiverId;
-    console.log(receiverRequestId);
-
-    // Step 3: Fetch the corresponding receiver request to check the receiverId
-    const receiverRequest = await ReceiverRequest.findOne({
-      _id: receiverRequestId,
-      receiverId: req.user.id, // Check if the receiver ID matches the authenticated user's ID
-    });
-
-    if (!receiverRequest) {
-      return res.status(404).json({ msg: "No matching receiver request found for this user" });
-    }
-
-    // Step 4: Fetch the donor's details
-    const donor = await User.findById(donation.donorId); // Find the donor's details using the donorId from the donation
+    // Step 2: Fetch the donor's details using the donorId from the donation
+    const donor = await User.findById(donation.donorId);
 
     if (!donor) {
-      return res.status(404).json({ msg: "Donor not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Donor details not found for the specified donation.",
+      });
     }
 
-    // Step 5: If donation and receiver request match, return both along with donor details
-    res.json({
-      msg: "Donation, Donor and Receiver request details fetched successfully",
+    // Step 3: Return donation details along with donor information
+    return res.status(200).json({
+      success: true,
+      message: "Donation details fetched successfully.",
       donation: {
         donationId: donation._id,
-        donorName: donor.name, // Donor's name
-        quantity: donation.quantity, // Donation quantity
-        location: donation.location.landmark, // Donation location
+        donorName: donor.name,
+        quantity: donation.quantity,
+        location: donation.location.landmark,
       },
     });
   } catch (error) {
-    console.error("Error fetching donation or receiver request:", error);
-    res.status(500).json({ msg: "Error fetching donation or receiver request details", error });
+    console.error("Error fetching donation or donor details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
+
  
 
 
@@ -189,7 +187,7 @@ const getActiveDonation = async (req, res) => {
   //     const donation = await Donation.findOne({ receiverId: req.user.id });
 
   //     if (!donation) {
-  //       return res.status(404).json({ msg: "Donation not found" });
+  //       return res.status(400).json({ msg: "Donation not found" });
   //     }
 
   //     donation.approveDonation = approveDonation;
@@ -214,7 +212,7 @@ const getActiveDonation = async (req, res) => {
   
     try {
       if (approveDonation === undefined || acceptasVolunteer === undefined) {
-        return res.status(400).json({ message: "Both approveDonation and acceptasVolunteer are required" });
+        return res.status(404).json({success:true, message: "Both approveDonation and acceptasVolunteer are required" });
       }
   
       // Find the donation related to the receiver
@@ -222,7 +220,7 @@ const getActiveDonation = async (req, res) => {
       console.log("donation:", donation);
   
       if (!donation) {
-        return res.status(404).json({ msg: "Donation not found" });
+        return res.status(404).json({success:true, message: "Donation not found" });
       }
   
       // Update donation details
@@ -255,7 +253,8 @@ const getActiveDonation = async (req, res) => {
       await donation.save();
   
       res.status(200).json({
-        msg: "Donation status updated successfully",
+        success:true,
+        message: "Donation status updated successfully",
         updatedDonation: {
           status: donation.status,
           volunteerId: donation.volunteerId,
@@ -264,7 +263,7 @@ const getActiveDonation = async (req, res) => {
       });
     } catch (err) {
       console.error("Error updating donation status:", err);
-      res.status(500).json({ message: "Internal server error", error: err });
+      res.status(500).json({ success:false,message: "Internal server error", error: err });
     }
   };
 
@@ -275,19 +274,37 @@ const getActiveDonation = async (req, res) => {
       // Find the donation by ID
       const donation = await Donation.findById(donationId);
       if (!donation) {
-        return res.status(404).json({ message: "Donation not found" });
+        return res.status(204).json({success:true, message: "Donation not found" });
       }
   
       // Update the status to "rejected"
       donation.status = "rejected";
       await donation.save();
   
-      res.status(200).json({ message: "Donation rejected successfully", donation });
+      res.status(200).json({success:true, message: "Donation rejected successfully", donation });
     } catch (err) {
       console.error("Error rejecting donation:", err);
-      res.status(500).json({ message: "Internal server error", error: err });
+      res.status(500).json({success:false, message: "Internal server error", error: err });
     }
   };
+  
+
+  const completeDonation = async(req,res)=>{
+    const {donationId}=req.body;
+    try{
+      const donation=await Donation.findById(donationId);
+      if(!donation){
+        return res.status(204).json({success:true,message:"Donation not found"});
+        }
+        //Update the status to "completed"
+        donation.status="completed";
+        await donation.save();
+        res.status(200).json({success:true,message:"Donation completed successfully",donation});
+        }catch(err){
+          console.error("Error completing donation:",err);
+          res.status(500).json({success:false,message:"Internal server error",error:err});
+          }
+    }
   
   
 module.exports = {
@@ -297,5 +314,6 @@ module.exports = {
   getActiveDonation,
   acceptDonation,
   rejectDonation,
-  getDonations
+  getDonations,
+  completeDonation
 };

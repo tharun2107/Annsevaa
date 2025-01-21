@@ -8,7 +8,7 @@ const {
   assignVolunteer,
   getDonations,
   donarAccept,
-  
+  donate,
   updateDonationStatus,
   markAsSelfVolunteer,
   confirmPickup,
@@ -59,6 +59,6 @@ router.patch('/:id/confirm', confirmPickup);
 //donar requires a volunteer ==> needvolunteer : true
 router.patch("/need-volunteer/:id",needVolunteer)
 
-
+router.put('/donate/:requestId', donate);
 
 module.exports = router;

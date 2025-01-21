@@ -294,19 +294,53 @@ const registerHandler = async (req, res) => {
 //   }
 // };
 
+// const loginHandler = async (req, res) => {
+//   const { phone } = req.body;
+
+//   try {
+//     const user = await User.findOne({ phone });
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
+
+//     let redirectUrl = '/dashboard';
+//     if(user.isAdmin === true){
+//       redirectUrl = '/admin'
+//     }
+//     if (user.role === 'donor') {
+//       redirectUrl = '/donor';
+//     } else if (user.role === 'receiver') {
+//       redirectUrl = '/receiver';
+//     } else if (user.role === 'volunteer') {
+//       redirectUrl = '/volunteer';
+//     }
+//     console.log(user);  
+
+//     res.status(200).json({ message: 'Login successful', token, user, redirectUrl });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Failed to login', error });
+//   }
+// };
 const loginHandler = async (req, res) => {
   const { phone } = req.body;
 
   try {
     const user = await User.findOne({ phone });
+    console.log("User retrieved from DB:", user); // Debug log for user
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
+    console.log("Generated Token:", token); // Debug log for token
 
-    let redirectUrl = '/dashboard'; // Default redirect
-    if (user.role === 'donor') {
+    let redirectUrl = '/dashboard';
+    if (user.isAdmin === true) {
+      redirectUrl = '/admin';
+    } else if (user.role === 'donor') {
       redirectUrl = '/donor';
     } else if (user.role === 'receiver') {
       redirectUrl = '/receiver';
@@ -314,9 +348,13 @@ const loginHandler = async (req, res) => {
       redirectUrl = '/volunteer';
     }
 
+    console.log("Final Response Data:", { user, token, redirectUrl }); // Debug log for response data
+
     res.status(200).json({ message: 'Login successful', token, user, redirectUrl });
   } catch (error) {
+    console.error("Error in loginHandler:", error); // Log any errors
     res.status(500).json({ message: 'Failed to login', error });
   }
 };
+
 module.exports = { sendOtpHandler, verifyOtpHandler, registerHandler, loginHandler };

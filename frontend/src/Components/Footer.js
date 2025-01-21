@@ -2,12 +2,13 @@ import React from 'react';
 import './styles/Footer.css';
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear();
     return (
         <footer className="footer">
             <div className="footer-content">
                 <div className="footer-section">
                     <h3>Contact Us</h3>
-                    <p>Email: <a href="mailto:contact@anadhseva.com">contact@anadhseva.com</a></p>
+                    <p>Email: <a href="mailto:annsevaorg@gmail.com">annsevaorg@gmail.com</a></p>
                     <p>Phone: <a href="tel:+1234567890">+123 456 7890</a></p>
                 </div>
                 <div className="footer-section">
@@ -26,7 +27,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>&copy; 2024 Anadh Seva. All rights reserved.</p>
+            <p>&copy; {currentYear} AnnSeva. All rights reserved.</p>
             </div>
         </footer>
     );

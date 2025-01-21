@@ -30,17 +30,15 @@ const Home = () => {
                 axios.get("http://localhost:3001/api/metrics/requests"),
                 axios.get("http://localhost:3001/api/metrics/users"),
             ]);
-
-            setDonations(donationsRes.data);
-            setRequests(requestsRes.data);
-
+    
+            // Calculate counts based on response lengths
             setMetrics({
-                totalDonations: donationsRes.data.length,
-                totalReceivers: requestsRes.data.length,
-                totalUsers: usersRes.data.length,
+                totalDonations: donationsRes.data.length, // Count donations
+                totalReceivers: requestsRes.data.length,  // Count receivers
+                totalUsers: usersRes.data.length,         // Count users
                 inventoryStatus: { items: donationsRes.data.length, categories: 10 }, // Adjust as necessary
             });
-
+    
             setPendingRequests(
                 requestsRes.data.filter((request) => request.status === "pending")
             );
@@ -51,6 +49,7 @@ const Home = () => {
             console.error("Error fetching data", error);
         }
     };
+    
 
     const handleProtectedNavigation = (route) => {
         const token = localStorage.getItem("token");
