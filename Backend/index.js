@@ -19,7 +19,7 @@
 // mongoose
 //   .connect(url)
 //   .then(() => console.log("Connected to DataBase successfully..."));
-  
+
 // app.use('/images', express.static(path.join(__dirname, 'images')));
 // const { validateToken } = require("./middleware/validateToken");
 
@@ -44,10 +44,8 @@
 // // app.use("/api/requests", validateToken, requestRoutes);
 // // app.use("/api/donation", validateToken, donationRoutes);
 
-
 // // not done
 // // app.use("/api/user",validateToken, userRoutes);
-
 
 // app.use(errorHandler);
 
@@ -56,12 +54,11 @@
 //   console.log(`Proxy server listening at http://localhost:${PORT}`);
 // });
 
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = 3001;
@@ -77,12 +74,12 @@ const requestRoutes = require("./routes/request.route.js");
 const donationRoutes = require("./routes/donation.route.js");
 const userRoutes = require("./routes/user.route.js");
 const volunteerRoutes = require("./routes/volunteer.route.js");
-const historyRoutes=require("./routes/donationHistoryRoutes.js")
-const metrics = require("./routes/metrics.route.js")
+const historyRoutes = require("./routes/donationHistoryRoutes.js");
+const metrics = require("./routes/metrics.route.js");
 app.use(cors());
 app.use(express.json());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Connect to MongoDB
 const url = process.env.MONGO_URL;
@@ -91,7 +88,7 @@ mongoose
   .then(() => console.log("Connected to Database successfully..."));
 
 // Serve static images
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Authentication Routes (open to all)
 app.use("/api/auth", authRoutes);
@@ -102,7 +99,7 @@ app.use("/api/requests", validateToken, requestRoutes);
 app.use("/api/donation", validateToken, donationRoutes);
 app.use("/api/volunteer", validateToken, volunteerRoutes);
 app.use("/api/history", validateToken, historyRoutes);
-app.use("/api/metrics",metrics)
+app.use("/api/metrics", metrics);
 
 // Admin Routes (apply adminAuth for restricted access)
 // app.use("/admin", validateToken, adminAuth, adminRoutes);

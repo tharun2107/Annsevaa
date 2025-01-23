@@ -13,13 +13,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleOtpChange = (value, index) => {
-    if (isNaN(value)) return; // Prevent non-numeric input
+    if (isNaN(value)) return;  
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Automatically move to the next field
+   
     if (value && index < 5) {
       document.getElementById(`otp-input-${index + 1}`).focus();
     }
@@ -47,13 +47,28 @@ const Login = () => {
     try {
       const otpString = otp.join("");
       const response = await axios.post("http://localhost:3001/api/auth/verify-otp", { phone, otp: otpString });
-      const redirectionUrl = response.data.redirectUrl;
+
+       if(response.status === 200){
+        const response  = await axios.post("http://localhost:3001/api/auth/login",{phone})
+        if(response.status === 200){
+          const redirectionUrl = response.data.redirectUrl;
       console.log(response.data);
        console.log(redirectionUrl)
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success("Login successful");
       navigate(redirectionUrl);
+          }
+         else if(response.status === 404){
+          setErrorMessage("User not found");
+         }
+         
+        }
+        else{
+          setErrorMessage(response.data.message);
+        }
+       
+      
     } catch (error) {
       setErrorMessage("Failed to login. Please check the OTP and try again.");
       toast.error("Failed to login. Please check the OTP and try again.");

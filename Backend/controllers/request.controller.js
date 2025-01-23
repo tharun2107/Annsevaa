@@ -41,7 +41,7 @@ const postRequest = async (req, res) => {
   const getActiveRequests = async (req, res) => {
     try {
       // Await the results of the database queries
-      const requests = await Request.find();
+      const requests = await Request.find({isActive:true});
       //console.log(requests);
       const organizations = await User.find({ role: "receiver" ,isActive: true});
   

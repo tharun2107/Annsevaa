@@ -1,137 +1,4 @@
-
-// require('dotenv').config();
-// const express = require('express');
-// const unirest = require('unirest');
-// const crypto = require('crypto');
-// const jwt = require('jsonwebtoken');
-// const router = express.Router();
  
-// const User = require('../models/user.model');
-// const  FAST2SMS_API_KEY= process.env.FAST_SMS_API_KEY;
- 
-
-// // Dummy database to store OTPs
-// const otpStore = {};
-// const users = [];
-// console.log(users)
-// console.log(otpStore);
-// // Fast2SMS API Key
-// // const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY;
-// console.log(FAST2SMS_API_KEY);
-// // Utility to send OTP using Fast2SMS
-// function sendotp(phone, otp) {
-//     return new Promise((resolve, reject) => {
-//         const req = unirest('GET', 'https://www.fast2sms.com/dev/bulkV2');
-//         req.query({
-//             authorization: FAST2SMS_API_KEY,
-//             variables_values: otp,
-//             route: 'otp',
-//             numbers: phone
-//         });
-//         req.headers({ 'cache-control': 'no-cache' });
-//         console.log(req);
-
-//         req.end(function (res) {
-//             if (res.error) {
-//                 reject(res.error);
-//             } else {
-//                 resolve(res.body);
-//             }
-//         });
-//     });
-// }
-
-// // Route to send OTP
-// const SendOtp = async (req, res) => {
-//   const { phone } = req.body;
-//  console.log(phone);
-//     if (!phone) {
-//         return res.status(400).json({ message: 'Phone number is required' });
-//     }
-// console.log(phone);
-//     const otp = crypto.randomInt(100000, 999999).toString();
-//     otpStore[phone] = otp;
-// console.log(otp);
-//     try {
-//       const response = await sendotp(phone, otp);
-//       console.log(response);
-//         res.status(200).json({ message: 'OTP sent successfully', response });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Failed to send OTP', error });
-//     }
-// };
-
-// // Route to verify OTP
-// const verifyotp = async (req, res) => {
-//     const { phone, otp } = req.body;
-
-//     if (!phone || !otp) {
-//         return res.status(400).json({ message: 'Phone number and OTP are required' });
-//     }
-
-//     if (otpStore[phone] === otp) {
-//         delete otpStore[phone]; // Clear OTP after verification
-//         const token = jwt.sign({ phone }, process.env.JWT_SECRET, { expiresIn: '1h' });
-//         res.status(200).json({ message: 'OTP verified successfully', token });
-//     } else {
-//         res.status(400).json({ message: 'Invalid OTP' });
-//     }
-// };
-
-
-// const register = async (req, res) => {
-//   const { name, phone, email, role, location } = req.body;
-//   console.log(req.body);
-//   try {
-//     const existingUser = await User.findOne({ phone });
-//     if (!location.landmark || !location.lat || !location.long) {
-//       return res
-//         .status(400)
-//         .json({ msg: "Location (landmark, lat, long) is required" });
-//     }
-//     if (existingUser) {
-//       return res.status(400).json({ msg: "Phone number already registered" });
-//     }
-
-//     const user = new User({
-//       name,
-//       phone,
-//       email,
-//       role,
-//       location,
-//     });
-
-//     await user.save();
-//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-//       expiresIn: "1h",
-//     });
-//     res.status(201).json({ msg: "User registered successfully", token, user });
-//   } catch (error) {
-//     res.status(500).json({ msg: "Failed to register user", error });
-//   }
-// };
-
-// // Login User
-// const login = async (req, res) => {
-//   const { phone } = req.body;
-//   try {
-//     const user = await User.findOne({ phone });
-//     if (!user) {
-//       return res.status(404).json({ msg: "User not found" });
-//     }
-
-//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-//       expiresIn: "1h",
-//     });
-
-//     res.status(200).json({   msg: "Login successful", token, user });
-//   } catch (error) {
-//     res.status(500).json({ msg: "Failed to login", error });
-//   }
-// };
-
-// module.exports = { SendOtp,verifyotp,login, register};
-
 require('dotenv').config();
 const express = require('express');
 const crypto = require('crypto');
@@ -240,7 +107,7 @@ console.log(req.body)
 
     const isMatch = await bcrypt.compare(otp, otpRecord.otp);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid OTP' });
+      return res.status(401).json({ message: 'Invalid OTP' });
     }
 
     // OTP is valid, delete it and log the user in
@@ -277,52 +144,7 @@ const registerHandler = async (req, res) => {
   }
 };
 
-// // Login User
-// const loginHandler = async (req, res) => {
-//   const { phone } = req.body;
-
-//   try {
-//     const user = await User.findOne({ phone });
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
-//     res.status(200).json({ message: 'Login successful', token, user });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Failed to login', error });
-//   }
-// };
-
-// const loginHandler = async (req, res) => {
-//   const { phone } = req.body;
-
-//   try {
-//     const user = await User.findOne({ phone });
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
-
-//     let redirectUrl = '/dashboard';
-//     if(user.isAdmin === true){
-//       redirectUrl = '/admin'
-//     }
-//     if (user.role === 'donor') {
-//       redirectUrl = '/donor';
-//     } else if (user.role === 'receiver') {
-//       redirectUrl = '/receiver';
-//     } else if (user.role === 'volunteer') {
-//       redirectUrl = '/volunteer';
-//     }
-//     console.log(user);  
-
-//     res.status(200).json({ message: 'Login successful', token, user, redirectUrl });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Failed to login', error });
-//   }
-// };
+ 
 const loginHandler = async (req, res) => {
   const { phone } = req.body;
 
