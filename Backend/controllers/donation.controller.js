@@ -4,31 +4,40 @@ const mongoose = require("mongoose");
  
 const User = require("../models/user.model");
 const Request = require("../models/request.model");
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
 
 const handleupload = async (file) => {
-  console.log(file)
-  const matches = file.match(/^data:(.?);base64,(.)$/);
-  if (matches && matches.length === 3) {
-    const imageType = matches[1];
+  try {
+    if (!file) {
+      throw new Error("No file provided.");
+    }
+
+    const matches = file.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      throw new Error("Invalid base64 image format.");
+    }
+
+    const imageType = matches[1]; // e.g., 'image/png', 'image/jpeg'
     const base64Image = matches[2];
 
     const imageBuffer = Buffer.from(base64Image, "base64");
 
     const uploadDir = path.join(__dirname, "images");
     if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+      fs.mkdirSync(uploadDir); // Create directory if it doesn't exist
     }
 
-    const filePath = path.join(uploadDir,` ${Date.now()}.png`);
+    const filePath = path.join(uploadDir, `${Date.now()}.${imageType.split("/")[1]}`); // Save file with correct extension
     fs.writeFileSync(filePath, imageBuffer);
 
-    return filePath; // Save and return file path or URL
-  } else {
-    throw new Error("Invalid base64 image format.");
+    return filePath; // Return file path
+  } catch (error) {
+    console.error("Error in handleupload:", error.message);
+    throw error; // Propagate the error for handling in `postDonation`
   }
 };
+
 
 const postDonation = errorHandler(async (req, res) => {
   const {
@@ -42,39 +51,32 @@ const postDonation = errorHandler(async (req, res) => {
     orgID,
   } = req.body;
 
-  console.log(location)
-
-  console.log("orgID ::: ", orgID);
-
   try {
     const user = req.user;
     const donorId = user.id;
 
     let receiverObjectId = null;
 
-    // Convert receiverId to ObjectId if provided
+    // Validate and convert `receiverId` to ObjectId if provided
     if (receiverId) {
       if (!mongoose.Types.ObjectId.isValid(receiverId)) {
         return res.status(400).json({ msg: "Invalid receiverId" });
       }
-      // console.log("receiverId", receiverId);
       receiverObjectId = new mongoose.Types.ObjectId(receiverId);
-      // console.log("receiverObjectId", receiverObjectId);
-    }
-    // console.log("receiverObjectId", receiverObjectId);
-
-    // let pictureUrl = await handleupload(donationPicture);
-    // console.log("pictureUrl", pictureUrl);
-
-    let volunterrId = null;
-
-    const u = await User.findById(donorId);
-    if (u.role === "volunteer") {
-      volunterrId = u._id;
     }
 
-    // console.log("location", location);
-    let pictureUrl=""
+    // Upload the donation picture
+    let pictureUrl = "";
+    if (donationPicture) {
+      pictureUrl = await handleupload(donationPicture);
+    }
+
+    let volunteerId = null;
+
+    const userObj = await User.findById(donorId);
+    if (userObj.role === "volunteer") {
+      volunteerId = userObj._id;
+    }
 
     const newDonation = new Donation({
       donorId,
@@ -82,47 +84,37 @@ const postDonation = errorHandler(async (req, res) => {
       quantity,
       status: "pending",
       shelfLife,
-      receiverId: receiverObjectId, // Use the converted ObjectId
+      receiverId: receiverObjectId,
       needVolunteer: false,
-      volunterrId: volunterrId,
+      volunteerId: volunteerId,
       donationPicture: pictureUrl,
-      
     });
-    // console.log("newDonation", newDonation);
-    console.log("newDonation", newDonation);
 
-    // Find the request with the provided receiverId
     if (!isOrganisation) {
       let requestObjectId = null;
       if (requestId) {
         if (!mongoose.Types.ObjectId.isValid(requestId)) {
-          return res.status(400).json({ msg: "Invalid receiverId" });
+          return res.status(400).json({ msg: "Invalid requestId" });
         }
-        // console.log("receiverId", receiverId);
-        requestObjectId = new mongoose.Types.ObjectId(receiverId);
-        // console.log("receiverObjectId", receiverObjectId);
+        requestObjectId = new mongoose.Types.ObjectId(requestId);
       }
 
-      console.log("requestObjectId", requestObjectId);
-
       const request = await Request.findOne({
-        _id: requestId,
+        _id: requestObjectId,
         isActive: true,
       });
-      console.log("quantity", quantity);
-      console.log("request.quantity", request);
 
-      // console.log("request", request);
+      if (!request) {
+        return res.status(404).json({ msg: "Request not found" });
+      }
+
       if (quantity >= request.quantity) {
-        // update the request quantity to 0 and isActive to false and save to database without creating a new request
         request.quantity = 0;
         request.isActive = false;
       } else {
-        // update the request quantity by subtracting the donation quantity
         request.quantity -= quantity;
       }
       await request.save();
-      console.log("request", request);
     }
 
     const savedDonation = await newDonation.save();
@@ -137,6 +129,7 @@ const postDonation = errorHandler(async (req, res) => {
       .json({ msg: "Error creating donation", error: err.message });
   }
 });
+
  
 const deleteDonation = async (req, res) => {
   const donationId = req.params.id;

@@ -127,7 +127,7 @@ const volunteer = async (req, res) => {
             ? {
                 name: donation.donorId.name,
                 phone: donation.donorId.phone,
-                location: donation.donorId.location,
+                location: donation.location,
               }
             : "Donor information unavailable",
           receiver: receiverDetails || "Receiver information unavailable",
@@ -244,7 +244,9 @@ const acceptDonationByVolunteer = async (req, res) => {
 
     console.log("donation:" + donation);
 
-    res.status(200).json({ message: "Donation accepted successfully.", donation });
+    res
+      .status(200)
+      .json({ message: "Donation accepted successfully.", donation });
   } catch (err) {
     console.error("Error accepting donation:", err);
     res.status(500).json({ error: err.message });
@@ -265,7 +267,7 @@ const DonationPickedByVolunteer = async (req, res) => {
       { new: true }
     );
     console.log(donation);
-    if(!donation){
+    if (!donation) {
       return res.status(404).json({ message: "Donation not found." });
     }
 
