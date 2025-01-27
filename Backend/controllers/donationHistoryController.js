@@ -7,6 +7,10 @@ const ReceiverRequest = require("../models/request.model");
 // Fetch donor history
 const donorHistory = async (req, res) => {
     try {
+      console.log("Request User:", req.user); // Verify user data
+      if (!req.user || !req.user.id) {
+        return res.status(400).json({ error: "User not authenticated or ID missing" });
+      }
       const donations = await Donation.find({
         donorId: req.user.id,
         status: "completed",

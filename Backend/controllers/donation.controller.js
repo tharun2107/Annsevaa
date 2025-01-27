@@ -4,11 +4,47 @@ const mongoose = require("mongoose");
  
 const User = require("../models/user.model");
 const Request = require("../models/request.model");
- 
 const path = require("path");
+const fs = require("fs");
+
+const handleupload = async (file) => {
+  console.log(file)
+  const matches = file.match(/^data:(.?);base64,(.)$/);
+  if (matches && matches.length === 3) {
+    const imageType = matches[1];
+    const base64Image = matches[2];
+
+    const imageBuffer = Buffer.from(base64Image, "base64");
+
+    const uploadDir = path.join(__dirname, "images");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+
+    const filePath = path.join(uploadDir,` ${Date.now()}.png`);
+    fs.writeFileSync(filePath, imageBuffer);
+
+    return filePath; // Save and return file path or URL
+  } else {
+    throw new Error("Invalid base64 image format.");
+  }
+};
 
 const postDonation = errorHandler(async (req, res) => {
-  const { quantity, receiverId, shelfLife, location } = req.body;
+  const {
+    quantity,
+    receiverId,
+    shelfLife,
+    location,
+    donationPicture,
+    requestId,
+    isOrganisation,
+    orgID,
+  } = req.body;
+
+  console.log(location)
+
+  console.log("orgID ::: ", orgID);
 
   try {
     const user = req.user;
@@ -21,30 +57,84 @@ const postDonation = errorHandler(async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(receiverId)) {
         return res.status(400).json({ msg: "Invalid receiverId" });
       }
+      // console.log("receiverId", receiverId);
       receiverObjectId = new mongoose.Types.ObjectId(receiverId);
+      // console.log("receiverObjectId", receiverObjectId);
+    }
+    // console.log("receiverObjectId", receiverObjectId);
+
+    // let pictureUrl = await handleupload(donationPicture);
+    // console.log("pictureUrl", pictureUrl);
+
+    let volunterrId = null;
+
+    const u = await User.findById(donorId);
+    if (u.role === "volunteer") {
+      volunterrId = u._id;
     }
 
-    let pictureUrl = null;
-    if (req.file) {
-      pictureUrl = path.join("/images", req.file.filename);
-    }
+    // console.log("location", location);
+    let pictureUrl=""
 
     const newDonation = new Donation({
       donorId,
       location,
       quantity,
+      status: "pending",
       shelfLife,
       receiverId: receiverObjectId, // Use the converted ObjectId
       needVolunteer: false,
-      pictureUrl,
+      volunterrId: volunterrId,
+      donationPicture: pictureUrl,
+      
     });
+    // console.log("newDonation", newDonation);
+    console.log("newDonation", newDonation);
+
+    // Find the request with the provided receiverId
+    if (!isOrganisation) {
+      let requestObjectId = null;
+      if (requestId) {
+        if (!mongoose.Types.ObjectId.isValid(requestId)) {
+          return res.status(400).json({ msg: "Invalid receiverId" });
+        }
+        // console.log("receiverId", receiverId);
+        requestObjectId = new mongoose.Types.ObjectId(receiverId);
+        // console.log("receiverObjectId", receiverObjectId);
+      }
+
+      console.log("requestObjectId", requestObjectId);
+
+      const request = await Request.findOne({
+        _id: requestId,
+        isActive: true,
+      });
+      console.log("quantity", quantity);
+      console.log("request.quantity", request);
+
+      // console.log("request", request);
+      if (quantity >= request.quantity) {
+        // update the request quantity to 0 and isActive to false and save to database without creating a new request
+        request.quantity = 0;
+        request.isActive = false;
+      } else {
+        // update the request quantity by subtracting the donation quantity
+        request.quantity -= quantity;
+      }
+      await request.save();
+      console.log("request", request);
+    }
 
     const savedDonation = await newDonation.save();
 
-    res.status(201).json({ msg: "Donation request sent successfully", savedDonation });
+    res
+      .status(201)
+      .json({ msg: "Donation request sent successfully", savedDonation });
   } catch (err) {
     console.error("Error creating donation:", err);
-    res.status(400).json({ msg: "Error creating donation", error: err.message });
+    res
+      .status(400)
+      .json({ msg: "Error creating donation", error: err.message });
   }
 });
  
@@ -170,16 +260,15 @@ const getDonations = async (req, res) => {
   }
 };
 
-
 const donarAccept = async (req, res) => {
-  console.log(req.user.id); // Debugging the user id
+  console.log(req.user); // Debugging the user id
   try {
     // Query donations using donorId
     const donations = await Donation.find({ donorId: req.user.id });
     console.log(donations); // Debugging the response
 
     if (donations.length === 0) {
-      return res.status(404).json({ msg: "No donations found for this donor" });
+      return res.status(200).json({ msg: "No donations Currently", donations: [] });
     }
 
     // Filter donations based on status
@@ -205,7 +294,6 @@ const donarAccept = async (req, res) => {
     res.status(500).json({ msg: "Error accepting donation", error: err });
   }
 };
-
 //if volunteer accepts the donation the status is changed to pickedByVolunteer
 
 
@@ -310,6 +398,25 @@ const donate = async (req, res) => {
       res.status(500).json({ message: "Server Error" });
   }
 };
+const getActiveRequests = async (req, res) => {
+  try {
+     
+    const requests = await Request.find({isActive:true});
+    
+    const organizations = await User.find({ role: "receiver" ,isActive: true});
+
+    
+    console.log("Requests:", requests);
+    console.log("Organizations:", organizations);
+
+    res
+      .status(200)
+      .json({ msg: "Retrieved Active requests successfully", requests,organizations });
+  } catch (error) {
+    console.error("Error finding requests:", error); // Add detailed logging for debugging
+    res.status(400).json({ msg: "Error finding requests", error });
+  }
+};
 module.exports = {
   postDonation,
   deleteDonation,
@@ -322,5 +429,6 @@ module.exports = {
   markAsSelfVolunteer,
   confirmPickup,
   needVolunteer,
+  getActiveRequests
   
 };

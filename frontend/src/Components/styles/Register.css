@@ -1,42 +1,39 @@
-/* Global Styles */
+
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
   color: #fff;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url("../images/loginback.jpg") no-repeat center center / cover !important;
+  /* background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("../images/loginback.jpg") no-repeat center center / cover !important; */
 }
 
-/* Split Layout for Container */
+
 .registration-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  flex-wrap: wrap; /* For responsiveness */
+  flex-wrap: wrap;
 }
 
-/* Form Section (Left Side) */
 .registration-form {
   flex: 1;
-  max-width: 40%; /* Adjust form width */
+  max-width: 40%;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 40px 50px;
   text-align: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(15px);
-  margin: 20px; /* Add spacing for mobile */
+  margin: 20px; 
 }
-
-/* Title Styling */
 .registration-form h1 {
   margin-bottom: 10px;
   font-size: 2.5rem;
   color: #fff;
 }
 
-/* Input Field Styling */
+
 .input-field {
   width: 100% !important;
   padding: 15px;
@@ -53,7 +50,7 @@ body {
   border: 2px solid #00c6ff;
 }
 
-/* Submit Button Styling */
+
 .submit-button {
   width: 100%;
   padding: 15px;
@@ -72,24 +69,21 @@ body {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Error Message Styling */
 .error-message {
   color: #ff4d4d;
   font-size: 0.9rem;
   margin-top: 10px;
 }
-
-/* Image and Quote Section (Right Side) */
 .registration-image {
   flex: 1;
-  max-width: 50%; /* Restrict image width */
+  max-width: 50%;  
   height: auto;
   position: relative;
   background: url("../images/loginback.jpg") no-repeat center center / cover !important;
-  margin: 20px; /* Add spacing for mobile */
+  margin: 20px; 
 }
 
-/* Quote Styling */
+ 
 .registration-image .quote {
   position: absolute;
   top: 50%;
@@ -105,42 +99,39 @@ body {
   animation: fadeIn 3s ease-in-out;
 }
 
-/* Responsive Styles */
-
-/* Small Devices (Tablets and Mobiles: width <= 768px) */
+ 
 @media (max-width: 768px) {
-  /* Stack the layout vertically */
+  
   .registration-container {
     flex-direction: column;
     align-items: center;
   }
 
-  /* Form Section */
+ 
   .registration-form {
-    max-width: 90%; /* Form takes full width */
+    max-width: 90%; 
   }
-
-  /* Image Section */
+ 
   .registration-image {
-    max-width: 100%; /* Image takes full width */
-    height: 250px; /* Fixed height for smaller devices */
+    max-width: 100%;  
+    height: 250px; 
   }
 
-  /* Quote */
+ 
   .registration-image .quote {
-    font-size: 1.8rem; /* Smaller quote text */
+    font-size: 1.8rem;  
     padding: 15px;
   }
 }
 
-/* Extra Small Devices (Mobiles: width <= 480px) */
+ 
 @media (max-width: 480px) {
   .registration-form h1 {
-    font-size: 2rem; /* Smaller title size */
+    font-size: 2rem; 
   }
 
   .input-field {
-    font-size: 0.9rem; /* Adjust input font size */
+    font-size: 0.9rem;
     padding: 10px;
   }
 
@@ -150,11 +141,11 @@ body {
   }
 
   .registration-image .quote {
-    font-size: 1.5rem; /* Smaller quote text */
+    font-size: 1.5rem;  
   }
 }
 
-/* Loading Message Styling */
+ 
 .loading-message {
   text-align: center;
   margin-top: 20%;
@@ -170,7 +161,7 @@ body {
   color: #fff;
 }
 
-/* Spinner Styling */
+ 
 .spinner {
   width: 50px;
   height: 50px;

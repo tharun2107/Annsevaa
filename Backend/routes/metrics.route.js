@@ -1,8 +1,8 @@
 const express = require("express");
 const {
-    getAllDonations,
-    getAllRequests,
-    getAllUsers,
+  getAllDonations,
+  getAllRequests,
+  getAllUsers,
 } = require("../controllers/metrics.controller");
 const router = express.Router();
 

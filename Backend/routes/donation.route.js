@@ -13,6 +13,7 @@ const {
   markAsSelfVolunteer,
   confirmPickup,
   needVolunteer,
+  getActiveRequests,
   DonationPickedByVolunteer
 } = require("../controllers/donation.controller");
 const router = express.Router();
@@ -29,6 +30,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+router.get("/getDonations", getActiveRequests);
 
 // for posting a donation in donor page
 router.post("/", postDonation);

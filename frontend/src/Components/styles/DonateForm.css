@@ -9,17 +9,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Ensures that any overflow is hidden */
+    overflow: hidden;  
   }
   
   .image-preview img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* Ensures the image scales while maintaining its aspect ratio */
+    object-fit: contain; 
   }
   
   .custom-modal .modal-content {
-    width: 100%; /* Ensure the modal content takes full width */
+    width: 100%;  
   }
   
   .modal {
@@ -54,11 +54,11 @@
     }
   
     .form-label {
-      font-size: 14px; /* Adjust label font size for smaller screens */
+      font-size: 14px; 
     }
   
     .btn-success {
-      width: 100%; /* Full width button on smaller screens */
+      width: 100%;  
     }
   }
   
@@ -76,6 +76,6 @@
     }
   
     .form-label {
-      font-size: 12px; /* Adjust label font size for phone screens */
+      font-size: 12px;  
     }
   }

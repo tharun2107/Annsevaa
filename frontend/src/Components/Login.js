@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/Login.css";
-
+import api from "../api/axios"
 const Login = () => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -33,7 +32,8 @@ const Login = () => {
 
   const sendOtp = async () => {
     try {
-      await axios.post("http://localhost:3001/api/auth/send-otp", { phone });
+       
+      await api.post("http://localhost:3001/api/auth/send-otp", { phone });
       setIsOtpSent(true);
       setErrorMessage("");
       toast.success("OTP sent to your phone");
@@ -46,10 +46,10 @@ const Login = () => {
   const verifyAndLogin = async () => {
     try {
       const otpString = otp.join("");
-      const response = await axios.post("http://localhost:3001/api/auth/verify-otp", { phone, otp: otpString });
+      const response = await api.post("http://localhost:3001/api/auth/verify-otp", { phone, otp: otpString });
 
        if(response.status === 200){
-        const response  = await axios.post("http://localhost:3001/api/auth/login",{phone})
+        const response  = await api.post("http://localhost:3001/api/auth/login",{phone})
         if(response.status === 200){
           const redirectionUrl = response.data.redirectUrl;
       console.log(response.data);

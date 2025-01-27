@@ -137,8 +137,8 @@ const registerHandler = async (req, res) => {
     const user = new User({ name, phone, email, role, location });
     await user.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ message: 'User registered successfully', token ,user});
+    const token = jwt.sign({ id: user._id,role:role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ message: 'User registered successfully', token ,user,redirectUrl:`/${role}`});
   } catch (error) {
     res.status(500).json({ message: 'Failed to register user', error });
   }
@@ -150,15 +150,18 @@ const loginHandler = async (req, res) => {
 
   try {
     const user = await User.findOne({ phone });
-    console.log("User retrieved from DB:", user); // Debug log for user
+    // console.log(phone)
+    // console.log("User retrieved from DB:", user); // Debug log for user
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '5h' });
-    console.log("Generated Token:", token); // Debug log for token
-
+console.log("user id:",user._id)
+const token = jwt.sign(
+  { id: user._id, role: user.role }, // Add the necessary details here
+  process.env.JWT_SECRET,
+  { expiresIn: "5h" }
+);
     let redirectUrl = '/dashboard';
     if (user.isAdmin === true) {
       redirectUrl = '/admin';
@@ -170,10 +173,10 @@ const loginHandler = async (req, res) => {
       redirectUrl = '/volunteer';
     }
 
-    console.log("Final Response Data:", { user, token, redirectUrl }); // Debug log for response data
+    //console.log("Final Response Data:", { user, token, redirectUrl }); // Debug log for response data
 
     res.status(200).json({ message: 'Login successful', token, user, redirectUrl });
-  } catch (error) {
+  } catch (error) { 
     console.error("Error in loginHandler:", error); // Log any errors
     res.status(500).json({ message: 'Failed to login', error });
   }

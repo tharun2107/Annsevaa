@@ -3,12 +3,11 @@ import axios from "axios";
 import { CountUp } from "countup.js";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import img3 from "./images/about1.png"; // Ensure you have this image in the specified path
-import missionImg from "./images/donation.jpg"; // Update with the correct path
+import img3 from "./images/about1.png"; 
+import missionImg from "./images/donation.jpg"; 
 import "./styles/Home.css";
 
-import Footer from "./Footer"; // Import the Footer component
-
+import Footer from "./Footer";  
 const Home = () => {
     const [metrics, setMetrics] = useState({
         totalDonations: 0,
@@ -31,12 +30,12 @@ const Home = () => {
                 axios.get("http://localhost:3001/api/metrics/users"),
             ]);
     
-            // Calculate counts based on response lengths
+            
             setMetrics({
-                totalDonations: donationsRes.data.length, // Count donations
-                totalReceivers: requestsRes.data.length,  // Count receivers
-                totalUsers: usersRes.data.length,         // Count users
-                inventoryStatus: { items: donationsRes.data.length, categories: 10 }, // Adjust as necessary
+                totalDonations: donationsRes.data.length,  
+                totalReceivers: requestsRes.data.length,   
+                totalUsers: usersRes.data.length,          
+                inventoryStatus: { items: donationsRes.data.length, categories: 10 },  
             });
     
             setPendingRequests(

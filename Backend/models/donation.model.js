@@ -25,8 +25,15 @@
       needVolunteer: { type: Boolean, default: false },
       volunteerId: { type:mongoose.Schema.Types.ObjectId ,ref: "User",default:null },
       pictureUrl: { type: String },
-    },    
-    { timestamps: true }
+      isReceiverRequest: {
+        type: Boolean,
+        default: false
+      }
+
+    },
+    { 
+      timestamps: true,
+    }
   );
 
   // Check if the model is already defined, if not, define it

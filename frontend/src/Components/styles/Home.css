@@ -47,7 +47,7 @@
 
 .donate-button:hover {
     background-color: #0b3d91;
-    /* background-color: #45a049; */
+    
     transform: translateY(-1px);
 }
 
@@ -97,7 +97,7 @@
     }
 }
 
-/* Metrics Section */
+
 .metrics {
     display: flex;
     justify-content: space-around;
@@ -136,7 +136,7 @@
     color: #555;
 }
 
-/* Mission Section */
+
 .mission-section {
     display: flex;
     justify-content: space-between;
@@ -145,7 +145,7 @@
     background-color: #fff;
     width: 90%;
     flex-wrap: wrap;
-    /* Added for better responsiveness */
+    
 margin-top: 20px;
 
 }
@@ -155,7 +155,7 @@ margin-top: 20px;
     max-width: 50%;
     flex: 1;
     padding: 20px;
-    /* Added for better spacing */
+    
 }
 
 .mission-text h2 {
@@ -278,7 +278,7 @@ margin-top: 20px;
     color: white;
 }
 
-/* Responsive styling */
+ 
 @media (max-width: 768px) {
     .service-cards {
         flex-direction: column;
@@ -287,7 +287,7 @@ margin-top: 20px;
 
     .service-card {
         width: 80%;
-        margin-bottom: 20px; /* Ensure there's spacing between the cards */
+        margin-bottom: 20px;  
     }
 }
 
@@ -309,7 +309,7 @@ margin-top: 20px;
         font-size: 14px;
     }
 }
-/* Foundation Section */
+
 .foundation {
     padding: 50px 20px;
     background-color: #f9f9f9;
@@ -391,7 +391,7 @@ margin-top: 20px;
     transform: translateY(-2px);
 }
 
-/* Responsive styling */
+
 @media (max-width: 768px) {
     .foundation-content {
         flex-direction: column;
@@ -431,7 +431,7 @@ margin-top: 20px;
     }
 }
 
-/* Call-to-Action Section */
+ 
 .call-to-action {
     text-align: center;
     padding: 50px 20px;
@@ -445,17 +445,17 @@ margin-top: 20px;
 .call-to-action h2 {
     font-weight: 300;
     color: black;
-    /* Blue */
+    
     font-size: 2rem;
     margin-bottom: 25px;
 }
 
 .call-to-action button {
     background-color: #28a745;
-    /* Blue */
+    
     border: none;
     color: #fff;
-    /* White text */
+    
     padding: 15px 30px;
     font-size: 1.2rem;
     cursor: pointer;
@@ -465,11 +465,11 @@ margin-top: 20px;
 
 .call-to-action button:hover {
     background-color: #0056b3;
-    /* Darker blue */
+    
     transform: translateY(-5px);
 }
 
-/* About Section */
+ 
 .about {
     padding: 50px 20px;
     background-color: white;
@@ -502,8 +502,7 @@ margin-top: 20px;
 .about button:hover {
     background-color: #218838;
 }
-
-/* Causes Section */
+ 
 .mission {
     padding: 50px 20px;
     background-color: #f9f9f9;
@@ -520,7 +519,7 @@ margin-top: 20px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    /* Added for better responsiveness */
+    
 }
 
 .cause {
@@ -531,7 +530,7 @@ margin-top: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     margin-bottom: 20px;
-    /* Added for better spacing */
+   
 }
 
 .cause h3 {
@@ -544,7 +543,7 @@ margin-top: 20px;
     color: #666;
 }
 
-/* Media query for responsiveness */
+
 @media (max-width: 768px) {
     .metrics {
         flex-direction: column;

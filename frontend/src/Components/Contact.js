@@ -7,7 +7,7 @@ const Contact = () => {
   const send = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:9004/api/contact",
+        "http://localhost:3001/api/contact",
         {
           name: document.querySelector("#name").value,
           subject: document.querySelector("#subject").value,

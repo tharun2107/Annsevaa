@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import api from "../api/axios";
 
 export const Receiver = () => {
   const [donations, setDonations] = useState([]);
@@ -15,7 +15,7 @@ export const Receiver = () => {
   const fetchDonations = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
+      const response = await api.get(
         "http://localhost:3001/api/requests/getDonation",
         {
           headers: {
@@ -27,7 +27,6 @@ export const Receiver = () => {
         toast.error(response.data.message);
       } else if (response.data.success === true && response.status === 200) {
         setDonations([response.data.donation]);
-        //toast.success(response.data.message || "Donations fetched successfully.");
       } else if (response.data.success === true && response.status === 204) {
         toast.error(response.data.message);
       }
@@ -45,20 +44,22 @@ export const Receiver = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchDonations();
-    }, 5000); // Poll every  seconds
+    }, 5000);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    return () => clearInterval(interval);
   }, [fetchDonations]);
 
   const handleApprove = async (donationId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
+      const isVolunteer = volunteerStatus[donationId] || false;
+
+      const response = await api.post(
         "http://localhost:3001/api/requests/accept",
         {
           donationId: donationId,
           approveDonation: true,
-          acceptasVolunteer: volunteerStatus[donationId] || false,
+          acceptasVolunteer:isVolunteer,
         },
         {
           headers: {
@@ -66,13 +67,15 @@ export const Receiver = () => {
           },
         }
       );
-if (response.data.success === true && response.status === 200) {
+      if (response.data.success === true && response.status === 200) {
         toast.success("Donation approved successfully.");
         const approvedDonation = donations.find(
           (donation) => donation.donationId === donationId
         );
         setApprovedDonations((prev) => [...prev, approvedDonation]);
-        setDonations(donations.filter((donation) => donation.donationId !== donationId));
+        setDonations(
+          donations.filter((donation) => donation.donationId !== donationId)
+        );
       } else if (response.data.success === true && response.status === 204) {
         toast.error(response.data.message);
       } else {
@@ -89,11 +92,10 @@ if (response.data.success === true && response.status === 200) {
     }
   };
 
-
   const handleReject = async (donationId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:3001/api/requests/reject",
         { donationId },
         {
@@ -128,7 +130,7 @@ if (response.data.success === true && response.status === 200) {
     }
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:3001/api/requests",
         { quantity: requestQuantity },
         {
@@ -147,7 +149,9 @@ if (response.data.success === true && response.status === 200) {
       }
     } catch (error) {
       if (error.response) {
-        toast.error(error.response.data.message || "Error submitting food request.");
+        toast.error(
+          error.response.data.message || "Error submitting food request."
+        );
       } else if (error.request) {
         toast.error("No response from server. Please check your connection.");
       } else {
@@ -166,7 +170,7 @@ if (response.data.success === true && response.status === 200) {
   const handleReceivedFood = async (donationId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:3001/api/requests/completed",
         { donationId },
         {
@@ -177,10 +181,11 @@ if (response.data.success === true && response.status === 200) {
       );
       if (response.data.success === true && response.status === 200) {
         toast.success("Donation marked as completed.");
-  
-        // Remove the completed donation from the list of approved donations
+
         setApprovedDonations(
-          approvedDonations.filter((donation) => donation.donationId !== donationId)
+          approvedDonations.filter(
+            (donation) => donation.donationId !== donationId
+          )
         );
       } else if (response.data.success === true && response.status === 204) {
         toast.error(response.data.message || "No content available.");
@@ -201,8 +206,14 @@ if (response.data.success === true && response.status === 200) {
   };
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", padding: "30px", position: "relative" }}>
-      {/* Response message */}
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        padding: "30px",
+        position: "relative",
+      }}
+    >
       {responseMessage && (
         <div
           style={{
@@ -219,8 +230,7 @@ if (response.data.success === true && response.status === 200) {
           {responseMessage}
         </div>
       )}
-  
-      {/* Donations */}
+
       <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
         <h2>Donations</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
@@ -239,9 +249,15 @@ if (response.data.success === true && response.status === 200) {
                 }}
               >
                 <h3 style={{ color: "#333" }}>Donation Details</h3>
-                <p><strong>Donor:</strong> {donation.donorName}</p>
-                <p><strong>Quantity:</strong> {donation.quantity}</p>
-                <p><strong>Location:</strong> {donation.location}</p>
+                <p>
+                  <strong>Donor:</strong> {donation.donorName}
+                </p>
+                <p>
+                  <strong>Quantity:</strong> {donation.quantity}
+                </p>
+                <p>
+                  <strong>Location:</strong> {donation.location}
+                </p>
                 {donation.status !== "Completed" && (
                   <>
                     <label style={{ display: "block", marginTop: "10px" }}>
@@ -249,12 +265,21 @@ if (response.data.success === true && response.status === 200) {
                         type="checkbox"
                         checked={volunteerStatus[donation.donationId] || false}
                         onChange={(e) =>
-                          handleVolunteerChange(donation.donationId, e.target.checked)
+                          handleVolunteerChange(
+                            donation.donationId,
+                            e.target.checked
+                          )
                         }
-                      />
-                      {" "} I want to act as a volunteer
+                      />{" "}
+                      I want to act as a volunteer
                     </label>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "20px",
+                      }}
+                    >
                       <button
                         onClick={() => handleApprove(donation.donationId)}
                         style={{
@@ -291,8 +316,7 @@ if (response.data.success === true && response.status === 200) {
           )}
         </div>
       </div>
-  
-      {/* Approved Donations */}
+
       <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
         <h2>Approved Donations</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
@@ -311,9 +335,15 @@ if (response.data.success === true && response.status === 200) {
                 }}
               >
                 <h3 style={{ color: "#333" }}>Donation Details</h3>
-                <p><strong>Donor:</strong> {donation.donorName}</p>
-                <p><strong>Quantity:</strong> {donation.quantity}</p>
-                <p><strong>Location:</strong> {donation.location}</p>
+                <p>
+                  <strong>Donor:</strong> {donation.donorName}
+                </p>
+                <p>
+                  <strong>Quantity:</strong> {donation.quantity}
+                </p>
+                <p>
+                  <strong>Location:</strong> {donation.location}
+                </p>
                 <button
                   onClick={() => handleReceivedFood(donation.donationId)}
                   style={{
@@ -334,8 +364,7 @@ if (response.data.success === true && response.status === 200) {
           )}
         </div>
       </div>
-  
-      {/* Food Request */}
+
       <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
         <h2>Request Food</h2>
         <input
@@ -365,7 +394,6 @@ if (response.data.success === true && response.status === 200) {
           Request Food
         </button>
       </div>
-      </div>
-    )
-  }
-  
+    </div>
+  );
+};

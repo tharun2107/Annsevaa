@@ -113,8 +113,9 @@ const unirest = require('unirest');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
- 
+ const mongoose = require("mongoose")
 const User = require('../models/user.model');
+const { mongo } = require('mongoose');
 const  FAST2SMS_API_KEY= process.env.FAST_SMS_API_KEY;
  
 
@@ -267,9 +268,14 @@ const updateUser = async (req, res) => {
 };
 
 const getProfile = async (req, res) => {
+   
 const userId = req.user.id;
+console.log(userId)
+const objectId =  new mongoose.Types.ObjectId(userId);
+console.log(objectId);
+ 
 try {
-const user = await User.findById(userId);
+const user = await User.findById({_id:objectId});
 
 // Constructing the abstract user object
 const abstractUser = {

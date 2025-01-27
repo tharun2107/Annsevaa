@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import "./styles/volunteer.css";
 
 const Volunteer = () => {
@@ -9,43 +9,40 @@ const Volunteer = () => {
   const [donationToPickUp, setDonationToPickUp] = useState(null);
 
   useEffect(() => {
-    // Fetch donations periodically
     const fetchDonations = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await axios.get("http://localhost:3001/api/volunteer", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-        });
+        const response = await api.get(
+          "http://localhost:3001/api/volunteer",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
 
-        // If no donations, clear the previous donations
         setDonations(response.data || []);
       } catch (error) {
         console.error("Error fetching donations:", error.message);
       }
     };
 
-    // Initial fetch
     fetchDonations();
 
-    // Set interval to fetch donations every 10 seconds
     const intervalId = setInterval(fetchDonations, 10000);
 
-    // Clean up interval on component unmount
     return () => {
       clearInterval(intervalId);
     };
   }, []);
 
-  // Effect for accepting a donation
   useEffect(() => {
     if (donationToAccept) {
       const acceptDonation = async (donationId) => {
         const token = localStorage.getItem("token");
         try {
-          const response = await axios.patch(
+          const response = await api.patch(
             `http://localhost:3001/api/volunteer/accept/${donationId}`,
             {},
             {
@@ -57,9 +54,10 @@ const Volunteer = () => {
 
           alert(response.data.message);
 
-          // Update donations and move accepted donation to the accepted list
           setDonations((prevDonations) =>
-            prevDonations.filter((donation) => donation.donationId !== donationId)
+            prevDonations.filter(
+              (donation) => donation.donationId !== donationId
+            )
           );
 
           const acceptedDonation = donations.find(
@@ -76,30 +74,28 @@ const Volunteer = () => {
       };
 
       acceptDonation(donationToAccept);
-      setDonationToAccept(null); // Reset the donation to accept
+      setDonationToAccept(null);
     }
-  }, [donationToAccept, donations]); // Dependency array includes donationToAccept and donations
+  }, [donationToAccept, donations]);
 
-  // Effect for picking up a donation
   useEffect(() => {
     if (donationToPickUp) {
       const pickUpDonation = async (donationId) => {
         const token = localStorage.getItem("token");
         try {
-          const response = await axios.patch(
+          const response = await api.patch(
             `http://localhost:3001/api/volunteer/pickedfood/${donationId}`,
             {},
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
               },
             }
           );
 
           alert(response.data.message);
 
-          // Update donation status to picked by volunteer
           setAcceptedDonations((prevDonations) =>
             prevDonations.map((donation) =>
               donation.donationId === donationId
@@ -114,15 +110,24 @@ const Volunteer = () => {
       };
 
       pickUpDonation(donationToPickUp);
-      setDonationToPickUp(null); // Reset the donation to pick up
+      setDonationToPickUp(null);
     }
-  }, [donationToPickUp]); // Dependency array includes donationToPickUp
+  }, [donationToPickUp]);
 
   return (
-    <div style={{ display: "flex", padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      {/* Left Side: All Transactions */}
+    <div
+      style={{
+        display: "flex",
+        padding: "20px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
       <div style={{ flex: 1, marginRight: "20px" }}>
-        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>All Transactions</h2>
+        <h2
+          style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}
+        >
+          All Transactions
+        </h2>
         {donations.length === 0 ? (
           <p style={{ textAlign: "center", color: "red" }}>
             No donations require a volunteer at the moment.
@@ -141,7 +146,6 @@ const Volunteer = () => {
               }}
             >
               <div style={{ display: "flex", alignItems: "center" }}>
-                {/* Donor Details */}
                 <div style={{ flex: 1, textAlign: "center" }}>
                   <h3 style={{ color: "#007bff" }}>Donor</h3>
                   <p>
@@ -155,19 +159,24 @@ const Volunteer = () => {
                   </p>
                 </div>
 
-                {/* Arrow */}
                 <div style={{ flex: 0.2, textAlign: "center" }}>
-                  <span style={{ fontSize: "24px", color: "#333", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      fontSize: "24px",
+                      color: "#333",
+                      fontWeight: "bold",
+                    }}
+                  >
                     ➡️
                   </span>
                 </div>
 
-                {/* Receiver Details */}
                 <div style={{ flex: 1, textAlign: "center" }}>
                   <h3 style={{ color: "#007bff" }}>Receiver</h3>
                   <p>
                     <strong>Name:</strong>{" "}
-                    {donation.receiver?.name || "Receiver information unavailable"}
+                    {donation.receiver?.name ||
+                      "Receiver information unavailable"}
                   </p>
                   <p>
                     <strong>Location:</strong>{" "}
@@ -178,7 +187,6 @@ const Volunteer = () => {
                 </div>
               </div>
 
-              {/* Accept Button */}
               {donation.donationDetails?.status !== "pickedByVolunteer" && (
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <button
@@ -201,13 +209,16 @@ const Volunteer = () => {
         )}
       </div>
 
-      {/* Right Side: Accepted Donations */}
       <div style={{ flex: 1 }}>
-        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>
+        <h2
+          style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}
+        >
           Accepted Donations by Volunteer
         </h2>
         {acceptedDonations.length === 0 ? (
-          <p style={{ textAlign: "center", color: "blue" }}>No accepted donations yet.</p>
+          <p style={{ textAlign: "center", color: "blue" }}>
+            No accepted donations yet.
+          </p>
         ) : (
           acceptedDonations.map((donation, index) => (
             <div
@@ -222,7 +233,6 @@ const Volunteer = () => {
               }}
             >
               <div style={{ display: "flex", alignItems: "center" }}>
-                {/* Donor Details */}
                 <div style={{ flex: 1, textAlign: "center" }}>
                   <h3 style={{ color: "#007bff" }}>Donor</h3>
                   <p>
@@ -236,12 +246,12 @@ const Volunteer = () => {
                   </p>
                 </div>
 
-                {/* Receiver Details */}
                 <div style={{ flex: 1, textAlign: "center" }}>
                   <h3 style={{ color: "#007bff" }}>Receiver</h3>
                   <p>
                     <strong>Name:</strong>{" "}
-                    {donation.receiver?.name || "Receiver information unavailable"}
+                    {donation.receiver?.name ||
+                      "Receiver information unavailable"}
                   </p>
                   <p>
                     <strong>Location:</strong>{" "}
@@ -251,9 +261,9 @@ const Volunteer = () => {
                   </p>
                 </div>
               </div>
-                      
-                      {console.log(donation.donationId)}
-              {/* Pick Up Button */}
+
+              {console.log(donation.donationId)}
+
               {donation.status === "requestacceptedbyvolunteer" && (
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <button

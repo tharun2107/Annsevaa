@@ -49,8 +49,7 @@ const postRequest = async (req, res) => {
       console.log("Requests:", requests);
       console.log("Organizations:", organizations);
   
-      res
-        .status(200)
+      res.status(200)
         .json({ msg: "Retrieved Active requests successfully", requests,organizations });
     } catch (error) {
       console.error("Error finding requests:", error); // Add detailed logging for debugging
@@ -125,12 +124,14 @@ const deletedRequest = async (req, res) => {
 // const User = require('../models/User'); // Assuming the User model is located here
 
 const getActiveDonation = async (req, res) => {
+  console.log("req.user.id:",req.user.id);
   try {
     // Step 1: Fetch the pending donation for the logged-in receiver
     const donation = await Donation.findOne({
       status: "pending",
       receiverId: req.user.id, // Match the receiver ID with the logged-in user
     });
+     console.log("Donation:",donation)
 
     if (!donation) {
       return res.status(204).json({
@@ -209,7 +210,7 @@ const getActiveDonation = async (req, res) => {
   // };
   const acceptDonation = async (req, res) => {
     const {donationId, approveDonation, acceptasVolunteer } = req.body;
-  
+     console.log("acceptasVolunteer:" + acceptasVolunteer);
     try {
       if (approveDonation === undefined || acceptasVolunteer === undefined) {
         return res.status(404).json({success:true, message: "Both approveDonation and acceptasVolunteer are required" });
@@ -231,8 +232,6 @@ const getActiveDonation = async (req, res) => {
       if (acceptasVolunteer) {
         donation.needVolunteer = false;
         donation.status = "pickbyreceiver"; // Receiver needs a volunteer
-      }else{
-        donation.needVolunteer = true;
       }
   
       // Determine the role of the actor (donor, receiver, or volunteer)

@@ -8,14 +8,13 @@ const {
   volunteerHistory,
 } = require("../controllers/donationHistoryController");
 
-
 // Donor history route
-router.get("/donor/history",donorHistory);
+router.get("/donor/history", donorHistory);
 
 // Receiver history route
-router.get("/receiver/history",  receiverHistory);
+router.get("/receiver/history", receiverHistory);
 
 // Volunteer history route
-router.get("/volunteer/history",volunteerHistory);
+router.get("/volunteer/history", volunteerHistory);
 
 module.exports = router;

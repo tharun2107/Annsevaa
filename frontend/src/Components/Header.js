@@ -1,14 +1,17 @@
+
 // import React, { useState, useEffect } from "react";
 // import { Link, useLocation, useNavigate } from "react-router-dom";
 // import ProfileCardModal from "./ProfileCard";
 // import "./styles/Header.css";
 
 // const Header = () => {
+  
 //   const [menuOpen, setMenuOpen] = useState(false);
 //   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 //   const [user, setUser] = useState(null);
 //   const navigate = useNavigate();
 //   const location = useLocation();
+  
 
 //   useEffect(() => {
 //     const storedUser = localStorage.getItem("user");
@@ -34,6 +37,11 @@
 
 //   const closeProfileModal = () => {
 //     setIsProfileModalOpen(false);
+//   };
+
+//   const getHistoryLink = () => {
+//     if (!user) return "/history";
+//     return `/${user.role}/history`;  
 //   };
 
 //   return (
@@ -62,7 +70,7 @@
 //                 </li>
 //               )}
 //               <li>
-//                 <Link to="/history">History</Link>
+//                 <Link to={getHistoryLink()}>History</Link>
 //               </li>
 //               <li>
 //                 <button className="profile-button" onClick={openProfileModal}>
@@ -114,6 +122,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProfileCardModal from "./ProfileCard";
 import "./styles/Header.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -122,12 +132,25 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  // Function to fetch user data from localStorage
+  const fetchUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      setUser(null);
     }
-  }, []);
+  };
+
+  // Fetch user data on component mount and when the location changes
+  useEffect(() => {
+    fetchUser();
+  }, [location]); // Re-run when the location changes
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -137,6 +160,7 @@ const Header = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    toast.success("You have successfully logged out.");
     navigate("/login");
   };
 
@@ -148,6 +172,22 @@ const Header = () => {
     setIsProfileModalOpen(false);
   };
 
+  const getRoleBasedRoute = () => {
+    if (!user) return "/"; // Default to home if no user is logged in
+    switch (user.role) {
+      case "donor":
+        return "/donor";
+      case "receiver":
+        return "/receiver";
+      case "volunteer":
+        return "/volunteer";
+      case "admin":
+        return "/admin";
+      default:
+        return "/"; // Fallback route
+    }
+  };
+
   const getHistoryLink = () => {
     if (!user) return "/history";
     return `/${user.role}/history`; // Constructs the route dynamically based on role
@@ -157,27 +197,15 @@ const Header = () => {
     <header className="header">
       <div className="logo">Anadh Seva</div>
       <div className="menu-icon" onClick={toggleMenu}>
-        &#9776;
+        ☰
       </div>
       <nav>
         <ul className={menuOpen ? "show" : ""}>
           {user ? (
             <>
-              {user.role === "donor" && (
-                <li>
-                  <Link to="/donor">Dashboard</Link>
-                </li>
-              )}
-              {user.role === "receiver" && (
-                <li>
-                  <Link to="/receiver">Dashboard</Link>
-                </li>
-              )}
-              {user.role === "volunteer" && (
-                <li>
-                  <Link to="/volunteer">Dashboard</Link>
-                </li>
-              )}
+              <li>
+                <Link to={getRoleBasedRoute()}>Dashboard</Link>
+              </li>
               <li>
                 <Link to={getHistoryLink()}>History</Link>
               </li>

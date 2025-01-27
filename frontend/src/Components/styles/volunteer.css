@@ -1,4 +1,4 @@
-/* General Styles */
+ 
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f7fc;
@@ -11,8 +11,7 @@ body {
     margin: 0 auto;
     padding-top: 20px;
   }
-  
-  /* Card Style for Donation */
+   
   .donation-card {
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -41,7 +40,7 @@ body {
     font-size: 14px;
   }
   
-  /* Button Styles */
+  
   .donation-buttons {
     display: flex;
     flex-direction: column;
@@ -82,7 +81,7 @@ body {
     cursor: not-allowed;
   }
   
-  /* Status */
+ 
   .donation-status {
     font-size: 14px;
     font-weight: 500;

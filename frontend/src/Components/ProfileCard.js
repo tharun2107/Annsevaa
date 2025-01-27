@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit, FaTimes } from "react-icons/fa";
-import "./styles/ProfileCard.css"; // CSS file for styling
+import "./styles/ProfileCard.css"; 
 
 const ProfileCardModal = ({ isOpen, closeModal }) => {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ location: {} });
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for saving
-  const [isFetching, setIsFetching] = useState(false); // Loading state for fetching
+  const [isLoading, setIsLoading] = useState(false);  
+  const [isFetching, setIsFetching] = useState(false);  
 
   useEffect(() => {
     const fetchProfile = async () => {
-      setIsFetching(true); // Start loading state
+      setIsFetching(true); 
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -30,7 +30,7 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
-        setIsFetching(false); // End loading state
+        setIsFetching(false);  
       }
     };
 
@@ -121,7 +121,7 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
   };
 
   if (!isOpen || isFetching) {
-    return null; // Render nothing if modal is closed or fetching data
+    return null;  
   }
 
   return (
