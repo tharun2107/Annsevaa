@@ -1,7 +1,7 @@
 const errorHandler = require("express-async-handler");
 const Donation = require("../models/donation.model");
 const mongoose = require("mongoose");
- 
+
 const User = require("../models/user.model");
 const Request = require("../models/request.model");
 const fs = require("fs");
@@ -28,7 +28,10 @@ const handleupload = async (file) => {
       fs.mkdirSync(uploadDir); // Create directory if it doesn't exist
     }
 
-    const filePath = path.join(uploadDir, `${Date.now()}.${imageType.split("/")[1]}`); // Save file with correct extension
+    const filePath = path.join(
+      uploadDir,
+      `${Date.now()}.${imageType.split("/")[1]}`
+    ); // Save file with correct extension
     fs.writeFileSync(filePath, imageBuffer);
 
     return filePath; // Return file path
@@ -37,7 +40,6 @@ const handleupload = async (file) => {
     throw error; // Propagate the error for handling in `postDonation`
   }
 };
-
 
 const postDonation = errorHandler(async (req, res) => {
   const {
@@ -78,13 +80,21 @@ const postDonation = errorHandler(async (req, res) => {
       volunteerId = userObj._id;
     }
 
+    let organisazationId = null;
+    if (isOrganisation) {
+      if (!mongoose.Types.ObjectId.isValid(orgID)) {
+        return res.status(400).json({ msg: "Invalid orgID" });
+      }
+      organisazationId = new mongoose.Types.ObjectId(orgID);
+    }
+
     const newDonation = new Donation({
       donorId,
       location,
       quantity,
       status: "pending",
       shelfLife,
-      receiverId: receiverObjectId,
+      receiverId: isOrganisation ? organisazationId : receiverId,
       needVolunteer: false,
       volunteerId: volunteerId,
       donationPicture: pictureUrl,
@@ -130,7 +140,6 @@ const postDonation = errorHandler(async (req, res) => {
   }
 });
 
- 
 const deleteDonation = async (req, res) => {
   const donationId = req.params.id;
   try {
@@ -162,16 +171,15 @@ const acceptDonation = async (req, res) => {
     donation.status = donation.needVolunteer
       ? "assigning_volunteer"
       : "self_pickup";
-    
 
-      // updating existing requests of receiver
-      const request = await Request.findOne({ receiverId: req.user.id });
-      if(request.quantity - quantity <= 0) {
-        const deletedRequest = await Request.findByIdAndDelete(request._id);
-      } else {
-        request.quantity = request.quantity - quantity;
-        const updatedRequest = await request.save();
-      }
+    // updating existing requests of receiver
+    const request = await Request.findOne({ receiverId: req.user.id });
+    if (request.quantity - quantity <= 0) {
+      const deletedRequest = await Request.findByIdAndDelete(request._id);
+    } else {
+      request.quantity = request.quantity - quantity;
+      const updatedRequest = await request.save();
+    }
 
     // Save the updated donation
     const updatedDonation = await donation.save();
@@ -261,27 +269,31 @@ const donarAccept = async (req, res) => {
     console.log(donations); // Debugging the response
 
     if (donations.length === 0) {
-      return res.status(200).json({ msg: "No donations Currently", donations: [] });
+      return res
+        .status(200)
+        .json({ msg: "No donations Currently", donations: [] });
     }
 
     // Filter donations based on status
-    const matchedDonations = donations.filter(donation => 
-      donation.status === "approved" || donation.status === "pickbyreceiver" || donation.status === "rejected"
+    const matchedDonations = donations.filter(
+      (donation) =>
+        donation.status === "approved" ||
+        donation.status === "pickbyreceiver" ||
+        donation.status === "rejected"
     );
 
     if (matchedDonations.length === 0) {
       return res.status(200).json({
         msg: "No donations with the required status found",
-        donations: matchedDonations
+        donations: matchedDonations,
       });
     }
 
     // Return all matching donations
     return res.status(200).json({
       msg: "Fetched Donations with required status",
-      donations: matchedDonations
+      donations: matchedDonations,
     });
-
   } catch (err) {
     console.error("Error accepting donation:", err);
     res.status(500).json({ msg: "Error accepting donation", error: err });
@@ -289,15 +301,16 @@ const donarAccept = async (req, res) => {
 };
 //if volunteer accepts the donation the status is changed to pickedByVolunteer
 
-
-
-
 const updateDonationStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    const donation = await Donation.findByIdAndUpdate(id, { status }, { new: true });
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
 
     if (!donation) {
       return res.status(404).json({ msg: "Donation not found" });
@@ -314,13 +327,19 @@ const markAsSelfVolunteer = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const donation = await Donation.findByIdAndUpdate(id, { status: "pickbydonor" }, { new: true });
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      { status: "pickbydonor" },
+      { new: true }
+    );
 
     if (!donation) {
       return res.status(404).json({ msg: "Donation not found" });
     }
 
-    res.status(200).json({ msg: "Donation status updated to pickbydonor", donation });
+    res
+      .status(200)
+      .json({ msg: "Donation status updated to pickbydonor", donation });
   } catch (err) {
     res.status(500).json({ msg: "Error updating donation status", error: err });
   }
@@ -330,81 +349,96 @@ const confirmPickup = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const donation = await Donation.findByIdAndUpdate(id, { status: "completed" }, { new: true });
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      { status: "completed" },
+      { new: true }
+    );
 
     if (!donation) {
       return res.status(404).json({ msg: "Donation not found" });
     }
 
-    res.status(200).json({ msg: "Donation status marked as completed", donation });
+    res
+      .status(200)
+      .json({ msg: "Donation status marked as completed", donation });
   } catch (err) {
     res.status(500).json({ msg: "Error confirming pickup", error: err });
   }
 };
 
-const needVolunteer = async (req,res)=>{
-  const {id} = req.params;
-  console.log(id)
-  try{
+const needVolunteer = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
     const donation = await Donation.findById(id);
-    if(!donation){
-      return res.status(404).json({msg:"Donation not found"});
+    if (!donation) {
+      return res.status(404).json({ msg: "Donation not found" });
     }
-    
+
     donation.needVolunteer = true;
     await donation.save();
-    res.status(200).json({msg:"Donation marked as needing volunteer",donation});
+    res
+      .status(200)
+      .json({ msg: "Donation marked as needing volunteer", donation });
+  } catch (err) {
+    res.status(500).json({ msg: "Error updating needVolunteer", error: err });
   }
-  catch(err){
-    res.status(500).json({msg:"Error updating needVolunteer",error:err});
-  }
-}
+};
 
 // Controller to handle donation updates
 const donate = async (req, res) => {
   try {
-      const { quantityDonated } = req.body; // Get quantity donated from the request body
-      const { requestId } = req.params; // Get the request ID from params
+    const { quantityDonated } = req.body; // Get quantity donated from the request body
+    const { requestId } = req.params; // Get the request ID from params
 
-      // Find the request by ID
-      const request = await Request.findById(requestId);
-      if (!request) {
-          return res.status(404).json({ message: "Request not found" });
-      }
+    // Find the request by ID
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
 
-      let remainingQuantity = request.quantity - quantityDonated;
+    let remainingQuantity = request.quantity - quantityDonated;
 
-      // Update the request with the remaining quantity or deactivate if fully donated
-      if (remainingQuantity > 0) {
-          request.quantity = remainingQuantity;
-          request.isActive = true;  // Keep the request active
-          await request.save();
-          return res.json({ message: "Donation successfully added", remainingQuantity });
-      } else {
-          request.quantity = 0;
-          request.isActive = false;  // Deactivate the request if fully donated
-          await request.save();
-          return res.json({ message: "Donation fully completed, request closed", remainingQuantity: 0 });
-      }
+    // Update the request with the remaining quantity or deactivate if fully donated
+    if (remainingQuantity > 0) {
+      request.quantity = remainingQuantity;
+      request.isActive = true; // Keep the request active
+      await request.save();
+      return res.json({
+        message: "Donation successfully added",
+        remainingQuantity,
+      });
+    } else {
+      request.quantity = 0;
+      request.isActive = false; // Deactivate the request if fully donated
+      await request.save();
+      return res.json({
+        message: "Donation fully completed, request closed",
+        remainingQuantity: 0,
+      });
+    }
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
 const getActiveRequests = async (req, res) => {
   try {
-     
-    const requests = await Request.find({isActive:true});
-    
-    const organizations = await User.find({ role: "receiver" ,isActive: true});
+    const requests = await Request.find({ isActive: true });
 
-    
+    const organizations = await User.find({ role: "receiver", isActive: true });
+
     console.log("Requests:", requests);
     console.log("Organizations:", organizations);
 
     res
       .status(200)
-      .json({ msg: "Retrieved Active requests successfully", requests,organizations });
+      .json({
+        msg: "Retrieved Active requests successfully",
+        requests,
+        organizations,
+      });
   } catch (error) {
     console.error("Error finding requests:", error); // Add detailed logging for debugging
     res.status(400).json({ msg: "Error finding requests", error });
@@ -417,11 +451,10 @@ module.exports = {
   getDonations,
   assignVolunteer,
   donarAccept,
- donate,
+  donate,
   updateDonationStatus,
   markAsSelfVolunteer,
   confirmPickup,
   needVolunteer,
-  getActiveRequests
-  
+  getActiveRequests,
 };
