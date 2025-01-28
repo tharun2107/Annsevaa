@@ -46,8 +46,8 @@ const postRequest = async (req, res) => {
       const organizations = await User.find({ role: "receiver" ,isActive: true});
   
       // Log the results to ensure they are retrieved correctly
-      console.log("Requests:", requests);
-      console.log("Organizations:", organizations);
+      // console.log("Requests:", requests);
+      // console.log("Organizations:", organizations);
   
       res.status(200)
         .json({ msg: "Retrieved Active requests successfully", requests,organizations });
@@ -60,7 +60,7 @@ const postRequest = async (req, res) => {
   const getDonations = async (req, res) => {
     // const { user } = req.body;  
     // console.log(user);
-    console.log(req.user)
+    // console.log(req.user)
     try {
         const donation = await Donation.find({ receiverId: req.user.id, status: "pending" });
         

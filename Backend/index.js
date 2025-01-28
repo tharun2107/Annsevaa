@@ -4,6 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
 
+// const upload = require("./utils/multerconfig.js")
+
 const app = express();
 const PORT = 3001;
 
@@ -34,6 +36,7 @@ mongoose
 
 // Serve static images
 app.use("/images", express.static(path.join(__dirname, "images")));
+// console.log(path.join(__dirname,'images'))
 
 // Authentication Routes (open to all)
 app.use("/api/auth", authRoutes);

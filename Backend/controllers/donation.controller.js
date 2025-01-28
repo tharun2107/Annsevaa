@@ -4,54 +4,30 @@ const mongoose = require("mongoose");
 
 const User = require("../models/user.model");
 const Request = require("../models/request.model");
-const fs = require("fs");
-const path = require("path");
 
-const handleupload = async (file) => {
-  try {
-    if (!file) {
-      throw new Error("No file provided.");
-    }
-
-    const matches = file.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      throw new Error("Invalid base64 image format.");
-    }
-
-    const imageType = matches[1]; // e.g., 'image/png', 'image/jpeg'
-    const base64Image = matches[2];
-
-    const imageBuffer = Buffer.from(base64Image, "base64");
-
-    const uploadDir = path.join(__dirname, "images");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir); // Create directory if it doesn't exist
-    }
-
-    const filePath = path.join(
-      uploadDir,
-      `${Date.now()}.${imageType.split("/")[1]}`
-    ); // Save file with correct extension
-    fs.writeFileSync(filePath, imageBuffer);
-
-    return filePath; // Return file path
-  } catch (error) {
-    console.error("Error in handleupload:", error.message);
-    throw error; // Propagate the error for handling in `postDonation`
-  }
-};
+const upload = require("../utils/multerconfig");
 
 const postDonation = errorHandler(async (req, res) => {
   const {
     quantity,
     receiverId,
     shelfLife,
-    location,
+    landmark,
+    lat,
+    long,
     donationPicture,
     requestId,
     isOrganisation,
     orgID,
   } = req.body;
+
+  const location = {
+    landmark,
+    lat,
+    long,
+  };
+
+  // console.log("request body", req.file)
 
   try {
     const user = req.user;
@@ -59,19 +35,25 @@ const postDonation = errorHandler(async (req, res) => {
 
     let receiverObjectId = null;
 
+    // console.log("req.body")
+
     // Validate and convert `receiverId` to ObjectId if provided
-    if (receiverId) {
+    // console.log(typeof receiverId, "receiver")
+    if (
+      receiverId !== undefined &&
+      receiverId !== null &&
+      receiverId !== "undefined"
+    ) {
+      // console.log("Hello")
       if (!mongoose.Types.ObjectId.isValid(receiverId)) {
         return res.status(400).json({ msg: "Invalid receiverId" });
       }
       receiverObjectId = new mongoose.Types.ObjectId(receiverId);
     }
 
-    // Upload the donation picture
     let pictureUrl = "";
-    if (donationPicture) {
-      pictureUrl = await handleupload(donationPicture);
-    }
+    // console.log(req.file)
+    if(req.file) pictureUrl = req.file.filename;
 
     let volunteerId = null;
 
@@ -99,6 +81,9 @@ const postDonation = errorHandler(async (req, res) => {
       volunteerId: volunteerId,
       donationPicture: pictureUrl,
     });
+
+    // console.log("reached here")
+    // console.log("location", location)
 
     if (!isOrganisation) {
       let requestObjectId = null;
@@ -262,7 +247,7 @@ const getDonations = async (req, res) => {
 };
 
 const donarAccept = async (req, res) => {
-  console.log(req.user); // Debugging the user id
+  // console.log(req.user); // Debugging the user id
   try {
     // Query donations using donorId
     const donations = await Donation.find({ donorId: req.user.id });
@@ -432,13 +417,11 @@ const getActiveRequests = async (req, res) => {
     console.log("Requests:", requests);
     console.log("Organizations:", organizations);
 
-    res
-      .status(200)
-      .json({
-        msg: "Retrieved Active requests successfully",
-        requests,
-        organizations,
-      });
+    res.status(200).json({
+      msg: "Retrieved Active requests successfully",
+      requests,
+      organizations,
+    });
   } catch (error) {
     console.error("Error finding requests:", error); // Add detailed logging for debugging
     res.status(400).json({ msg: "Error finding requests", error });

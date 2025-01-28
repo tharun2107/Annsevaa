@@ -18,23 +18,12 @@ const {
 } = require("../controllers/donation.controller");
 const router = express.Router();
 
-// Setup Multer for handling file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../images')); // Specify the folder to save images
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname.replaceAll(" ", ""))); // Generate a unique filename with extension
-  },
-});
-
-const upload = multer({ storage: storage });
+const upload = require('../utils/multerconfig')
 
 router.get("/getDonations", getActiveRequests);
 
 // for posting a donation in donor page
-router.post("/", postDonation);
+router.post("/", upload.single("donationPicture"), postDonation);
 
 // for deleting donation when receiver declines the donation
 router.delete("/:id", deleteDonation);
