@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 import "./styles/VolunteerFilter.css";
 
-const VolunteerFilter = ({ fdonations, donations }) => {
+const VolunteerFilter = ({ fdonations, donations, activedonations }) => {
   const navigate = useNavigate();
+
+  // console.log(activedonations);
 
   function distance(lat1, lon1, lat2, lon2) {
     const toRadians = (degree) => (degree * Math.PI) / 180;
@@ -24,27 +26,47 @@ const VolunteerFilter = ({ fdonations, donations }) => {
     return R * c; // Distance in kilometers
   }
 
-
   const user = JSON.parse(localStorage.getItem("user"));
   const { lat, long } = user.location;
+  // console.log(lat, long);
+  // console.log(user);
 
   const setd = (d) => {
-    if(d===null) {
-      donations(fdonations);
-      return
+    if (d === null) {
+      donations(fdonations); // Reset to all donations
+      console.log("Reset to all donations");
+      return;
     }
+  
     donations(
       fdonations.filter((donation) => {
+        // Handle missing donor location gracefully
+        if (
+          !donation.donor?.location?.lat ||
+          !donation.donor?.location?.long
+        ) {
+          return false; // Exclude donations with missing location data
+        }
+  
         const distanceInKm = distance(
           lat,
           long,
           donation.donor.location.lat,
           donation.donor.location.long
         );
-        return distanceInKm <= d;
+  
+        return distanceInKm <= d; // Return true if within the specified distance
       })
-    )
+    );
+  
+    console.log("Filtered donations:", fdonations);
   };
+
+
+  useEffect(() => {
+    console.log("Filter donations", activedonations);
+  }, [activedonations]);
+  
 
   return (
     <div
@@ -53,7 +75,7 @@ const VolunteerFilter = ({ fdonations, donations }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f2f2f2",
+        backgroundColor: "#49ac3a",
         borderRadius: "9px",
         padding: "10px",
         gap: "20px",

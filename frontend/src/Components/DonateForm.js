@@ -252,7 +252,6 @@
 
 // export default DonateForm;
 
-
 // import api from "api";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import React, { useState, useEffect } from "react";
@@ -508,8 +507,6 @@
 
 // export default DonateForm;
 
-
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
@@ -526,7 +523,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./styles/DonateForm.css";
 import api from "../api/axios";
- 
+
 const DonateForm = ({
   receiverId,
   setShowForm,
@@ -536,12 +533,10 @@ const DonateForm = ({
   activerequests,
   activeorganizations,
   isOrganisation,
-  orgID
+  orgID,
 }) => {
   // console.log("requestId", requestId);
   // console.log("receiverId", receiverId);
-
-  
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -564,7 +559,7 @@ const DonateForm = ({
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
           setLocation("Location fetched using geolocation"); // Placeholder text for location
-          console.log(longitude, latitude, "latlong")
+          console.log(longitude, latitude, "latlong");
         },
         (error) => {
           toast.error("Location access denied. Please enable location.");
@@ -591,15 +586,15 @@ const DonateForm = ({
       donationPicture: previewImage, // Send the base64-encoded image here
       requestId,
       isOrganisation,
-      orgID
-
+      orgID,
     };
 
-    console.log(previewImage)
+    console.log(previewImage);
 
     try {
       // console.log(donationData);
-      const response = await api.post("http://localhost:3001/api/donation",
+      const response = await api.post(
+        "http://localhost:3001/api/donation",
         donationData,
         {
           headers: {
