@@ -4,6 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../api/axios";
 
+import "./styles/Receiver.css";
+
 export const Receiver = () => {
   const [donations, setDonations] = useState([]);
   const [volunteerStatus, setVolunteerStatus] = useState({});
@@ -42,11 +44,7 @@ export const Receiver = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchDonations();
-    }, 5000);
-
-    return () => clearInterval(interval);
+    fetchDonations();
   }, [fetchDonations]);
 
   const handleApprove = async (donationId) => {
@@ -59,7 +57,7 @@ export const Receiver = () => {
         {
           donationId: donationId,
           approveDonation: true,
-          acceptasVolunteer:isVolunteer,
+          acceptasVolunteer: isVolunteer,
         },
         {
           headers: {
@@ -212,187 +210,202 @@ export const Receiver = () => {
         flexWrap: "wrap",
         padding: "30px",
         position: "relative",
+        flexDirection: "column",
       }}
     >
-      {responseMessage && (
-        <div
-          style={{
-            position: "absolute",
-            top: "5px",
-            right: "20px",
-            padding: "10px 12px",
-            backgroundColor: responseColor,
-            color: "#fff",
-            borderRadius: "5px",
-            fontSize: "16px",
-          }}
-        >
-          {responseMessage}
-        </div>
-      )}
-
-      <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
-        <h2>Donations</h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-          {donations.length > 0 ? (
-            donations.map((donation) => (
-              <div
-                key={donation.donationId}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "20px",
-                  borderRadius: "10px",
-                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                  backgroundColor: "#fff",
-                  flex: "1 1 calc(50% - 20px)",
-                  maxWidth: "400px",
-                }}
-              >
-                <h3 style={{ color: "#333" }}>Donation Details</h3>
-                <p>
-                  <strong>Donor:</strong> {donation.donorName}
-                </p>
-                <p>
-                  <strong>Quantity:</strong> {donation.quantity}
-                </p>
-                <p>
-                  <strong>Location:</strong> {donation.location}
-                </p>
-                {donation.status !== "Completed" && (
-                  <>
-                    <label style={{ display: "block", marginTop: "10px" }}>
-                      <input
-                        type="checkbox"
-                        checked={volunteerStatus[donation.donationId] || false}
-                        onChange={(e) =>
-                          handleVolunteerChange(
-                            donation.donationId,
-                            e.target.checked
-                          )
-                        }
-                      />{" "}
-                      I want to act as a volunteer
-                    </label>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: "20px",
-                      }}
-                    >
-                      <button
-                        onClick={() => handleApprove(donation.donationId)}
-                        style={{
-                          padding: "10px 20px",
-                          backgroundColor: "#4caf50",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(donation.donationId)}
-                        style={{
-                          padding: "10px 20px",
-                          backgroundColor: "#f44336",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))
-          ) : (
-            <p>No donations available.</p>
-          )}
-        </div>
+      <div className="loader">
+        <button className="reload-button" onClick={fetchDonations}>Reload Donations</button>
       </div>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          padding: "30px",
+          position: "relative",
+        }}
+      >
+        {responseMessage && (
+          <div
+            style={{
+              position: "absolute",
+              top: "5px",
+              right: "20px",
+              padding: "10px 12px",
+              backgroundColor: responseColor,
+              color: "#fff",
+              borderRadius: "5px",
+              fontSize: "16px",
+            }}
+          >
+            {responseMessage}
+          </div>
+        )}
 
-      <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
-        <h2>Approved Donations</h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-          {approvedDonations.length > 0 ? (
-            approvedDonations.map((donation) => (
-              <div
-                key={donation.donationId}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "20px",
-                  borderRadius: "10px",
-                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                  backgroundColor: "#fff",
-                  flex: "1 1 calc(50% - 20px)",
-                  maxWidth: "400px",
-                }}
-              >
-                <h3 style={{ color: "#333" }}>Donation Details</h3>
-                <p>
-                  <strong>Donor:</strong> {donation.donorName}
-                </p>
-                <p>
-                  <strong>Quantity:</strong> {donation.quantity}
-                </p>
-                <p>
-                  <strong>Location:</strong> {donation.location}
-                </p>
-                <button
-                  onClick={() => handleReceivedFood(donation.donationId)}
+        <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
+          <h2>Donations</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+            {donations.length > 0 ? (
+              donations.map((donation) => (
+                <div
+                  key={donation.donationId}
                   style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#2196f3",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
+                    border: "1px solid #ddd",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: "#fff",
+                    flex: "1 1 calc(50% - 20px)",
+                    maxWidth: "400px",
                   }}
                 >
-                  Mark as Received
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No approved donations.</p>
-          )}
+                  <h3 style={{ color: "#333" }}>Donation Details</h3>
+                  <p>
+                    <strong>Donor:</strong> {donation.donorName}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {donation.quantity}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {donation.location}
+                  </p>
+                  {donation.status !== "Completed" && (
+                    <>
+                      <label style={{ display: "block", marginTop: "10px" }}>
+                        <input
+                          type="checkbox"
+                          checked={
+                            volunteerStatus[donation.donationId] || false
+                          }
+                          onChange={(e) =>
+                            handleVolunteerChange(
+                              donation.donationId,
+                              e.target.checked
+                            )
+                          }
+                        />{" "}
+                        I want to act as a volunteer
+                      </label>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginTop: "20px",
+                        }}
+                      >
+                        <button
+                          onClick={() => handleApprove(donation.donationId)}
+                          style={{
+                            padding: "10px 20px",
+                            backgroundColor: "#4caf50",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleReject(donation.donationId)}
+                          style={{
+                            padding: "10px 20px",
+                            backgroundColor: "#f44336",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>No donations available.</p>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
-        <h2>Request Food</h2>
-        <input
-          type="number"
-          value={requestQuantity}
-          onChange={(e) => setRequestQuantity(e.target.value)}
-          style={{
-            padding: "10px",
-            width: "100%",
-            marginBottom: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ddd",
-          }}
-          placeholder="Enter quantity"
-        />
-        <button
-          onClick={handleRequestFood}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#4caf50",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Request Food
-        </button>
+        <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
+          <h2>Approved Donations</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+            {approvedDonations.length > 0 ? (
+              approvedDonations.map((donation) => (
+                <div
+                  key={donation.donationId}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: "#fff",
+                    flex: "1 1 calc(50% - 20px)",
+                    maxWidth: "400px",
+                  }}
+                >
+                  <h3 style={{ color: "#333" }}>Donation Details</h3>
+                  <p>
+                    <strong>Donor:</strong> {donation.donorName}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {donation.quantity}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {donation.location}
+                  </p>
+                  <button
+                    onClick={() => handleReceivedFood(donation.donationId)}
+                    style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#2196f3",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Mark as Received
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p>No approved donations.</p>
+            )}
+          </div>
+        </div>
+
+        <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
+          <h2>Request Food</h2>
+          <input
+            type="number"
+            value={requestQuantity}
+            onChange={(e) => setRequestQuantity(e.target.value)}
+            style={{
+              padding: "10px",
+              width: "100%",
+              marginBottom: "10px",
+              borderRadius: "5px",
+              border: "1px solid #ddd",
+            }}
+            placeholder="Enter quantity"
+          />
+          <button
+            onClick={handleRequestFood}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#4caf50",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Request Food
+          </button>
+        </div>
       </div>
     </div>
   );

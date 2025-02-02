@@ -34,7 +34,7 @@ function App() {
           <Route
             path="/receiver"
             element={
-              <ProtectedRoutes roles={['receiver']}>
+              <ProtectedRoutes roles={['receiver', 'volunteer', 'donor']}>
                 <Receiver />
               </ProtectedRoutes>
             }
@@ -42,7 +42,7 @@ function App() {
           <Route
             path="/donor"
             element={
-              <ProtectedRoutes roles={['donor']}>
+              <ProtectedRoutes roles={['donor', 'receiver', 'volunteer']}>
                 <Donor />
               </ProtectedRoutes>
             }
@@ -50,7 +50,7 @@ function App() {
           <Route
             path="/volunteer"
             element={
-              <ProtectedRoutes roles={['volunteer']}>
+              <ProtectedRoutes roles={['volunteer', 'receiver', 'donor']}>
                 <Volunteer />
               </ProtectedRoutes>
             }

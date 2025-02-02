@@ -8,7 +8,7 @@ import api from "../api/axios";
 import AcceptDonation from "./AcceptDonation";
 
 import Filter from "./Filter";
- 
+
 // Custom marker icons
 const donorIcon = new L.Icon({
   iconUrl:
@@ -28,9 +28,8 @@ const requestIcon = new L.Icon({
   iconSize: [50, 50],
 });
 
-
 const DonorPage = () => {
-    console.log(Filter)
+  console.log(Filter);
   const [quantity, setQuantity] = useState(0);
   const user = JSON.parse(localStorage.getItem("user"));
   const donorLocation = {
@@ -39,8 +38,7 @@ const DonorPage = () => {
   }; // Donor's location
 
   const [frequests, setFrequests] = useState([]);
-const [finalOrganizations, setFinalOrganizations] = useState([]);
-
+  const [finalOrganizations, setFinalOrganizations] = useState([]);
 
   const [activeRequests, setActiveRequests] = useState([]);
   const [activeOrganizations, setActiveOrganizations] = useState([]);
@@ -48,8 +46,8 @@ const [finalOrganizations, setFinalOrganizations] = useState([]);
   const [currentDonationData, setCurrentDonationData] = useState(null);
   const [isReceiverRequest, setIsReceiverRequest] = useState(false); // Track donation type
   const [fetchError, setFetchError] = useState(null);
-  const [isOrganisation,setIsOrganisation]=useState(false)
-  const [orgID,setOrgid] =useState("");
+  const [isOrganisation, setIsOrganisation] = useState(false);
+  const [orgID, setOrgid] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -74,7 +72,7 @@ const [finalOrganizations, setFinalOrganizations] = useState([]);
         const organizations = data.organizations || [];
         setFrequests(requests);
         setFinalOrganizations(organizations);
-        
+
         setActiveRequests(requests);
         setActiveOrganizations(organizations);
         setFetchError(null);
@@ -87,128 +85,142 @@ const [finalOrganizations, setFinalOrganizations] = useState([]);
     fetchData();
   }, []);
 
-  const handleDonateClick = (data, isOrganisation,orgID) => {
+  const handleDonateClick = (data, isOrganisation, orgID) => {
     console.log("Data clicked:", data);
     setCurrentDonationData(data);
-    setIsOrganisation(isOrganisation); 
-    if(isOrganisation){
-      setOrgid(orgID)
-    } 
+    setIsOrganisation(isOrganisation);
+    if (isOrganisation) {
+      setOrgid(orgID);
+    }
     setShowDonateForm(true);
   };
 
   const closeDonateForm = () => {
     setShowDonateForm(false);
   };
- 
+
   return (
-    <div className="donor-page" 
-              style={{
-                  display: "flex",
-                  flexDirection: "column",
-              }}>
-              <Filter
-              frequests={frequests}
-              forganizations={finalOrganizations}
-              requests={setActiveRequests}
-              organizations={setActiveOrganizations}
-          />
-          <div
-              className="donor-down-side"
-              style={{
-              display: "flex",
-              gap: "20px",
-              }}
+    <div
+      className="donor-page"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Filter
+        frequests={frequests}
+        forganizations={finalOrganizations}
+        requests={setActiveRequests}
+        organizations={setActiveOrganizations}
+      />
+      <div
+        className="donor-down-side"
+        style={{
+          display: "flex",
+          gap: "20px",
+        }}
+      >
+        <div className="map-container">
+          <MapContainer
+            center={donorLocation}
+            zoom={20}
+            style={{ height: "500px", width: "100%" }}
           >
-      <div className="map-container">
-        <MapContainer center={donorLocation} zoom={20} style={{ height: "500px", width: "100%" }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          />
-        <Marker position={donorLocation} icon={donorIcon}>
-            <Popup>Donor Location</Popup>
-          </Marker>
-          {[...activeRequests, ...activeOrganizations].map((req) => {
-            if (req.location) {
-              const icon = req.role === "receiver" ? orgIcon : requestIcon;
-              return (
-                <Marker
-                  key={req._id || req.id}
-                  position={[req.location.lat, req.location.long]}
-                  icon={icon}
-                >
-                  <Popup>{req.name || "No Name"}</Popup>
-                </Marker>
-              );
-            }
-            return null;
-          })}
-        </MapContainer>
-        <div>
-          <AcceptDonation />
-        </div>
-      </div>
-
-      <div className="requests-container">
-        {fetchError ? (
-          <div className="error-message">
-            <p>{fetchError}</p>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker position={donorLocation} icon={donorIcon}>
+              <Popup>Donor Location</Popup>
+            </Marker>
+            {[...activeRequests, ...activeOrganizations].map((req) => {
+              if (req.location) {
+                const icon = req.role === "receiver" ? orgIcon : requestIcon;
+                return (
+                  <Marker
+                    key={req._id || req.id}
+                    position={[req.location.lat, req.location.long]}
+                    icon={icon}
+                  >
+                    <Popup>{req.name || "No Name"}</Popup>
+                  </Marker>
+                );
+              }
+              return null;
+            })}
+          </MapContainer>
+          <div>
+            <AcceptDonation />
           </div>
-        ) : (
-          <>
-            <h3>Active Requests</h3>
-            <ul>
-              {activeRequests.map((item) => (
-                item._id ? (
-                  <li key={item._id} className="request">
-                    <h4>{item.receiverName || "Request"}</h4>
-                    <p>Quantity: {item.quantity}</p>
-                    <p>Phone: {item.receiverPhone}</p>
-                    <p>Address: {item.receiverAddress}</p>
-                    <p>Requested At: {new Date(item.createdAt).toLocaleString()}</p>
-                    <button onClick={() => handleDonateClick(item, false,null)}>Donate</button>
-                  </li>
-                ) : null
-              ))}
-            </ul>
+        </div>
 
-            <h3>Active Organizations</h3>
-            <ul>
-              {activeOrganizations.map((item) => (
-                item._id ? (
-                  <li key={item._id} className="organization">
-                    <h4>{item.name || "Organization"}</h4>
-                    <p>Phone: {item.phone}</p>
-                    <p>Is Active: {item.isActive ? "Yes" : "No"}</p>
-                    <button onClick={() => handleDonateClick(item, true,item._id)}>Donate</button>
-                  </li>
-                ) : null
-              ))}
-            </ul>
-          </>
+        <div className="requests-container">
+          {fetchError ? (
+            <div className="error-message">
+              <p>{fetchError}</p>
+            </div>
+          ) : (
+            <>
+              <h3>Active Requests</h3>
+              <ul>
+                {activeRequests.map((item) =>
+                  item._id ? (
+                    <li key={item._id} className="request">
+                      <h4>{item.receiverName || "Request"}</h4>
+                      <p>Quantity: {item.quantity}</p>
+                      <p>Phone: {item.receiverPhone}</p>
+                      <p>Address: {item.receiverAddress}</p>
+                      <p>
+                        Requested At:{" "}
+                        {new Date(item.createdAt).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => handleDonateClick(item, false, null)}
+                      >
+                        Donate
+                      </button>
+                    </li>
+                  ) : null
+                )}
+              </ul>
+
+              <h3>Active Organizations</h3>
+              <ul>
+                {activeOrganizations.map((item) =>
+                  item._id ? (
+                    <li key={item._id} className="organization">
+                      <h4>{item.name || "Organization"}</h4>
+                      <p>Phone: {item.phone}</p>
+                      <p>Is Active: {item.isActive ? "Yes" : "No"}</p>
+                      <button
+                        onClick={() => handleDonateClick(item, true, item._id)}
+                      >
+                        Donate
+                      </button>
+                    </li>
+                  ) : null
+                )}
+              </ul>
+            </>
+          )}
+        </div>
+
+        {showDonateForm && (
+          <DonateForm
+            receiverId={currentDonationData.receiverId}
+            setShowForm={setShowDonateForm}
+            quantity={quantity}
+            setQuantity={setQuantity}
+            requestId={currentDonationData._id || currentDonationData.id}
+            activerequests={setActiveRequests}
+            activeorganizations={setActiveOrganizations}
+            isOrganisation={isOrganisation}
+            orgID={orgID}
+          />
         )}
-      </div>
-
-      {showDonateForm && (
-        <DonateForm
-          receiverId={currentDonationData.receiverId}
-          setShowForm={setShowDonateForm}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          requestId={currentDonationData._id || currentDonationData.id}
-          activerequests={setActiveRequests}
-          activeorganizations={setActiveOrganizations}
-          isOrganisation={isOrganisation}
-          orgID={orgID}
-        />
-      )}
       </div>
     </div>
   );
 };
 
-
 export default DonorPage;
-  
- 
