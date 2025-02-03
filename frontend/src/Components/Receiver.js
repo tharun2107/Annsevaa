@@ -25,10 +25,12 @@ export const Receiver = () => {
           },
         }
       );
+      console.log(response.data);
       if (response.data.success === false) {
         toast.error(response.data.message);
       } else if (response.data.success === true && response.status === 200) {
-        setDonations([response.data.donation]);
+        setDonations([...response.data.donation]);
+        setApprovedDonations([...response.data.approvedDonation]);
       } else if (response.data.success === true && response.status === 204) {
         toast.error(response.data.message);
       }
@@ -331,7 +333,7 @@ export const Receiver = () => {
 
         <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
           <h2>Approved Donations</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" , flexDirection: "column"}}>
             {approvedDonations.length > 0 ? (
               approvedDonations.map((donation) => (
                 <div

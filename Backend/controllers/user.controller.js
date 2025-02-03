@@ -92,8 +92,6 @@
 //   }
 // };
 
-
-
 // module.exports = {
 //   updateAvailability,
 //   updateActiveReceiving,
@@ -104,20 +102,18 @@
 //   getProfile,
 // };
 
-
 // BACKEND
 // User Controller
-require('dotenv').config();
-const express = require('express');
-const unirest = require('unirest');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+require("dotenv").config();
+const express = require("express");
+const unirest = require("unirest");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
- const mongoose = require("mongoose")
-const User = require('../models/user.model');
-const { mongo } = require('mongoose');
-const  FAST2SMS_API_KEY= process.env.FAST_SMS_API_KEY;
- 
+const mongoose = require("mongoose");
+const User = require("../models/user.model");
+const { mongo } = require("mongoose");
+const FAST2SMS_API_KEY = process.env.FAST_SMS_API_KEY;
 
 // Dummy database to store OTPs
 const otpStore = {};
@@ -128,64 +124,66 @@ const users = [];
 console.log(FAST2SMS_API_KEY);
 // Utility to send OTP using Fast2SMS
 function sendOtp(phoneNumber, otp) {
-    return new Promise((resolve, reject) => {
-        const req = unirest('GET', 'https://www.fast2sms.com/dev/bulkV2');
-        req.query({
-            authorization: FAST2SMS_API_KEY,
-            variables_values: otp,
-            route: 'otp',
-            numbers: phoneNumber
-        });
-        req.headers({ 'cache-control': 'no-cache' });
-        console.log(req);
-
-        req.end(function (res) {
-            if (res.error) {
-                reject(res.error);
-            } else {
-                resolve(res.body);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    const req = unirest("GET", "https://www.fast2sms.com/dev/bulkV2");
+    req.query({
+      authorization: FAST2SMS_API_KEY,
+      variables_values: otp,
+      route: "otp",
+      numbers: phoneNumber,
     });
+    req.headers({ "cache-control": "no-cache" });
+    console.log(req);
+
+    req.end(function (res) {
+      if (res.error) {
+        reject(res.error);
+      } else {
+        resolve(res.body);
+      }
+    });
+  });
 }
-
-
 
 // Route to send OTP
 const SendOtp = async (req, res) => {
   const { phoneNumber } = req.body;
- console.log(phoneNumber);
-    if (!phoneNumber) {
-        return res.status(400).json({ message: 'Phone number is required' });
-    }
-console.log(phoneNumber);
-    const otp = crypto.randomInt(100000, 999999).toString();
-    otpStore[phoneNumber] = otp;
-console.log(otp);
-    try {
-      const response = await sendOtp(phoneNumber, otp);
-      console.log(response);
-        res.status(200).json({ message: 'OTP sent successfully', response });
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to send OTP', error });
-    }
+  console.log(phoneNumber);
+  if (!phoneNumber) {
+    return res.status(400).json({ message: "Phone number is required" });
+  }
+  console.log(phoneNumber);
+  const otp = crypto.randomInt(100000, 999999).toString();
+  otpStore[phoneNumber] = otp;
+  console.log(otp);
+  try {
+    const response = await sendOtp(phoneNumber, otp);
+    console.log(response);
+    res.status(200).json({ message: "OTP sent successfully", response });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to send OTP", error });
+  }
 };
 
 // Route to verify OTP
 const verifyotp = async (req, res) => {
-    const { phoneNumber, otp } = req.body;
+  const { phoneNumber, otp } = req.body;
 
-    if (!phoneNumber || !otp) {
-        return res.status(400).json({ message: 'Phone number and OTP are required' });
-    }
+  if (!phoneNumber || !otp) {
+    return res
+      .status(400)
+      .json({ message: "Phone number and OTP are required" });
+  }
 
-    if (otpStore[phoneNumber] === otp) {
-        delete otpStore[phoneNumber]; // Clear OTP after verification
-        const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '5h' });
-        res.status(200).json({ message: 'OTP verified successfully', token });
-    } else {
-        res.status(400).json({ message: 'Invalid OTP' });
-    }
+  if (otpStore[phoneNumber] === otp) {
+    delete otpStore[phoneNumber]; // Clear OTP after verification
+    const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, {
+      expiresIn: "5h",
+    });
+    res.status(200).json({ message: "OTP verified successfully", token });
+  } else {
+    res.status(400).json({ message: "Invalid OTP" });
+  }
 };
 
 // Route to register user
@@ -206,10 +204,16 @@ const register = async (req, res) => {
     });
 
     await user.save();
-    const token = jwt.sign({ id: user._id,role:role}, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.status(201).json({ msg: "User registered successfully", token, user,role:role });
+    const token = jwt.sign(
+      { id: user._id, role: role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+    res
+      .status(201)
+      .json({ msg: "User registered successfully", token, user, role: role });
   } catch (error) {
     res.status(500).json({ msg: "Failed to register user", error });
   }
@@ -224,11 +228,17 @@ const login = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const token = jwt.sign({ id: user._id,role:role }, process.env.JWT_SECRET, {
-      expiresIn: "5h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "5h",
+      }
+    );
 
-    res.status(200).json({ msg: "Login successful", token, user,role:user.role });
+    res
+      .status(200)
+      .json({ msg: "Login successful", token, user, role: user.role });
   } catch (error) {
     res.status(500).json({ msg: "Failed to login", error });
   }
@@ -268,30 +278,29 @@ const updateUser = async (req, res) => {
 };
 
 const getProfile = async (req, res) => {
-   
-const userId = req.user.id;
-console.log(userId)
-const objectId =  new mongoose.Types.ObjectId(userId);
-console.log(objectId);
- 
-try {
-const user = await User.findById({_id:objectId});
+  const userId = req.user.id;
+  console.log(userId);
+  const objectId = new mongoose.Types.ObjectId(userId);
+  console.log(objectId);
 
-// Constructing the abstract user object
-const abstractUser = {
-name: user.name,
-phone: user.phone,
-location: { ...user.location }, // Create a shallow copy for location
-};
+  try {
+    const user = await User.findById({ _id: objectId });
 
-// Sending the response
-res.status(200).json({
-msg: "Retrieved user details successfully",
-user: abstractUser, // No need for spread operator here
-});
-} catch (error) {
-res.status(500).json({ msg: "Failed to retrieve user details", error });
-}
+    // Constructing the abstract user object
+    const abstractUser = {
+      name: user.name,
+      phone: user.phone,
+      location: { ...user.location }, // Create a shallow copy for location
+    };
+
+    // Sending the response
+    res.status(200).json({
+      msg: "Retrieved user details successfully",
+      user: abstractUser, // No need for spread operator here
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Failed to retrieve user details", error });
+  }
 };
 
 module.exports = {

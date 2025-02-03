@@ -124,10 +124,9 @@ const deletedRequest = async (req, res) => {
 // const User = require('../models/User'); // Assuming the User model is located here
 
 const getActiveDonation = async (req, res) => {
-  console.log("req.user.id:",req.user.id);
   try {
     // Step 1: Fetch the pending donation for the logged-in receiver
-    const donation = await Donation.findOne({
+    const donation = await Donation.find({
       status: "pending",
       receiverId: req.user.id, // Match the receiver ID with the logged-in user
     });
@@ -140,27 +139,38 @@ const getActiveDonation = async (req, res) => {
       });
     }
 
-    // Step 2: Fetch the donor's details using the donorId from the donation
-    const donor = await User.findById(donation.donorId);
 
-    if (!donor) {
-      return res.status(404).json({
-        success: false,
-        message: "Donor details not found for the specified donation.",
-      });
-    }
+    const donations = donation.map((dn) => {
+      return {
+        donationId: dn._id,
+        donorName: dn.donorId.name,
+        quantity: dn.quantity,
+        location: dn.location.landmark,
+      };
+    });
+
+    let approvedDonations = await Donation.find({
+      status: {
+        $in: ["approved", "requestacceptedbyvolunteer"],
+      },
+      receiverId: req.user.id, // Match the receiver ID with the logged-in user
+    });
+    approvedDonations = approvedDonations.map((dn) => {
+      return {
+        donationId: dn._id,
+        donorName: dn.donorId.name,
+        quantity: dn.quantity,
+        location: dn.location.landmark,
+      };
+    });
 
     // Step 3: Return donation details along with donor information
     return res.status(200).json({
       success: true,
-      message: "Donation details fetched successfully.",
-      donation: {
-        donationId: donation._id,
-        donorName: donor.name,
-        quantity: donation.quantity,
-        location: donation.location.landmark,
-      },
-    });
+      message: "Donation details fetched successfully",
+      donation: donations,
+      approvedDonation: approvedDonations,
+    })
   } catch (error) {
     console.error("Error fetching donation or donor details:", error);
     return res.status(500).json({
