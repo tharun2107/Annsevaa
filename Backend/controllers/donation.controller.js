@@ -12,20 +12,12 @@ const postDonation = errorHandler(async (req, res) => {
     quantity,
     receiverId,
     shelfLife,
-    landmark,
-    lat,
-    long,
+    location,
     donationPicture,
     requestId,
     isOrganisation,
     orgID,
   } = req.body;
-
-  const location = {
-    landmark,
-    lat,
-    long,
-  };
 
   // console.log("request body", req.file)
 

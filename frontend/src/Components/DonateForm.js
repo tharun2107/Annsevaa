@@ -727,7 +727,12 @@ const DonateForm = ({
                   <input
                     type="text"
                     value={location || ""}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      setUseCurrentLocation(false);
+                      setLatitude(user.location.lat);
+                      setLongitude(user.location.long);
+                    }}
                     className="form-control"
                     required
                     placeholder="Enter a landmark or location"
@@ -739,12 +744,12 @@ const DonateForm = ({
                     <input
                       type="checkbox"
                       checked={useCurrentLocation}
-                      onChange={(e) => [
-                        setUseCurrentLocation(e.target.checked),
-                        setLocation(user.location.landmark),
-                        setLatitude(user.location.lat),
-                        setLongitude(user.location.long),
-                      ]}
+                      onChange={(e) => {
+                        setUseCurrentLocation(e.target.checked);
+                        setLocation(user.location.landmark);
+                        setLatitude(user.location.lat);
+                        setLongitude(user.location.long);
+                      }}
                     />
                     Use my current location
                   </label>
