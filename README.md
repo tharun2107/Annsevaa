@@ -31,7 +31,7 @@ Annseva is a food donation platform that connects **donors**, **recipients**, an
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/annseva.git
+   git clone https://github.com/tharun2107/annseva.git
    cd annseva
    ```
 
@@ -72,6 +72,6 @@ Annseva is a food donation platform that connects **donors**, **recipients**, an
 
 If you have any questions, feel free to reach out!
 
-- **Developer:** Your Name
+- **Developer:** Annseva Team
 - **Email:** annsevaord@example.com
 - **GitHub:** [tharun2107](https://github.com/yourusername)
