@@ -558,7 +558,7 @@ const DonateForm = ({
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          setLocation("Location fetched using geolocation"); // Placeholder text for location
+          setLocation(user.location.landmark); // Placeholder text for location
           console.log(longitude, latitude, "latlong");
         },
         (error) => {

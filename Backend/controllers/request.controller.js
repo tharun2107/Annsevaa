@@ -2,7 +2,7 @@ const Request = require("../models/request.model");
 const User = require("../models/user.model");
 const Donation = require("../models/donation.model");
  const ReceiverRequest = require("../models/request.model");
-
+const mongoose = require("mongoose")
 
 const postRequest = async (req, res) => {
     const { quantity } = req.body;
@@ -125,54 +125,66 @@ const deletedRequest = async (req, res) => {
 
 const getActiveDonation = async (req, res) => {
   try {
-    // Step 1: Fetch the pending donation for the logged-in receiver
-    const donation = await Donation.find({
-      status: "pending",
-      receiverId: req.user.id, // Match the receiver ID with the logged-in user
-    });
-     console.log("Donation:",donation)
+    console.log("Fetching active donations for receiver:", req.user.id);
 
-    if (!donation) {
+    // Step 1: Fetch Pending Donations
+    const pendingDonations = await Donation.find({
+      status: "pending",
+      receiverId: req.user.id,
+    }).populate("donorId", "name email phone"); // Populate donor details
+
+    console.log("Pending Donations:", pendingDonations);
+
+    // Format Pending Donations
+    const formattedPendingDonations = pendingDonations.map((dn) => ({
+      donationId: dn._id,
+      donorName: dn.donorId ? dn.donorId.name : "Unknown Donor",
+      donorEmail: dn.donorId ? dn.donorId.email : "No Email",
+      donorPhone: dn.donorId ? dn.donorId.phone : "No Phone",
+      quantity: dn.quantity,
+      location: dn.location.landmark,
+    }));
+
+    // Step 2: Fetch Approved Donations
+    let approvedDonations = await Donation.find({
+      status: { $in: ["approved", "requestacceptedbyvolunteer", "pickbydonor", "pickbyvolunteer"] },
+      receiverId: req.user.id,
+    })
+      .populate("donorId", "name email phone")
+      .populate("volunteerId", "name email phone");
+
+    console.log("Approved Donations:", approvedDonations);
+
+    // Format Approved Donations
+    const formattedApprovedDonations = approvedDonations.map((dn) => ({
+      donationId: dn._id,
+      donorName: dn.donorId ? dn.donorId.name : "Unknown Donor",
+      donorEmail: dn.donorId ? dn.donorId.email : "No Email",
+      donorPhone: dn.donorId ? dn.donorId.phone : "No Phone",
+      volunteerName: dn.volunteerId ? dn.volunteerId.name : "No Volunteer Assigned",
+      volunteerEmail: dn.volunteerId ? dn.volunteerId.email : "No Email",
+      volunteerPhone: dn.volunteerId ? dn.volunteerId.phone : "No Phone",
+      quantity: dn.quantity,
+      location: dn.location.landmark,
+    }));
+
+    // If no donations are found, return a 204 response
+    if (formattedPendingDonations.length === 0 && formattedApprovedDonations.length === 0) {
       return res.status(204).json({
         success: true,
-        message: "No pending donations found for the logged-in receiver.",
+        message: "No donations found for the logged-in receiver.",
       });
     }
 
-
-    const donations = donation.map((dn) => {
-      return {
-        donationId: dn._id,
-        donorName: dn.donorId.name,
-        quantity: dn.quantity,
-        location: dn.location.landmark,
-      };
-    });
-
-    let approvedDonations = await Donation.find({
-      status: {
-        $in: ["approved", "requestacceptedbyvolunteer"],
-      },
-      receiverId: req.user.id, // Match the receiver ID with the logged-in user
-    });
-    approvedDonations = approvedDonations.map((dn) => {
-      return {
-        donationId: dn._id,
-        donorName: dn.donorId.name,
-        quantity: dn.quantity,
-        location: dn.location.landmark,
-      };
-    });
-
-    // Step 3: Return donation details along with donor information
+    // Step 3: Return response
     return res.status(200).json({
       success: true,
       message: "Donation details fetched successfully",
-      donation: donations,
-      approvedDonation: approvedDonations,
-    })
+      pendingDonations: formattedPendingDonations,
+      approvedDonations: formattedApprovedDonations,
+    });
   } catch (error) {
-    console.error("Error fetching donation or donor details:", error);
+    console.error("Error fetching donation details:", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -180,6 +192,7 @@ const getActiveDonation = async (req, res) => {
     });
   }
 };
+
 
  
 

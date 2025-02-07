@@ -30,7 +30,8 @@ export const Receiver = () => {
         toast.error(response.data.message);
       } else if (response.data.success === true && response.status === 200) {
         setDonations([...response.data.donation]);
-        setApprovedDonations([...response.data.approvedDonation]);
+        setApprovedDonations([...response.data.approvedDonations]);
+        console.log(approvedDonations);
       } else if (response.data.success === true && response.status === 204) {
         toast.error(response.data.message);
       }
@@ -216,7 +217,9 @@ export const Receiver = () => {
       }}
     >
       <div className="loader">
-        <button className="reload-button" onClick={fetchDonations}>Reload Donations</button>
+        <button className="reload-button" onClick={fetchDonations}>
+          Reload Donations
+        </button>
       </div>
       <div
         style={{
@@ -333,7 +336,14 @@ export const Receiver = () => {
 
         <div style={{ flex: 1, minWidth: "300px", margin: "10px" }}>
           <h2>Approved Donations</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" , flexDirection: "column"}}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "20px",
+              flexDirection: "column",
+            }}
+          >
             {approvedDonations.length > 0 ? (
               approvedDonations.map((donation) => (
                 <div
@@ -357,6 +367,12 @@ export const Receiver = () => {
                   </p>
                   <p>
                     <strong>Location:</strong> {donation.location}
+                  </p>
+                  <p>
+                    <strong>volunteer Name:</strong> {donation.volunteerName}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {donation.volunteerPhone}
                   </p>
                   <button
                     onClick={() => handleReceivedFood(donation.donationId)}

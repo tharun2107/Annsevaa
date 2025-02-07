@@ -239,24 +239,69 @@ const getDonations = async (req, res) => {
 };
 
 const donarAccept = async (req, res) => {
-  // console.log(req.user); // Debugging the user id
+  console.log(req.user); // Debugging the user id
   try {
     // Query donations using donorId
     const donations = await Donation.find({ donorId: req.user.id });
     console.log(donations); // Debugging the response
 
     if (donations.length === 0) {
-      return res
-        .status(200)
-        .json({ msg: "No donations Currently", donations: [] });
+      return res.status(200).json({ msg: "No donations currently", donations: [] });
     }
 
-    // Filter donations based on status
-    const matchedDonations = donations.filter(
-      (donation) =>
-        donation.status === "approved" ||
-        donation.status === "pickbyreceiver" ||
-        donation.status === "rejected"
+    // Fetch and add additional details to donations
+    const matchedDonations = await Promise.all(
+      donations
+        .filter((donation) =>
+          ["approved", "pickbyreceiver", "rejected", "pending", "pickbydonor", "requestacceptedbyvolunteer", "pickbyvolunteer"].includes(donation.status)
+        )
+        .map(async (donation) => {
+          const donationObj = donation.toObject(); // Convert Mongoose document to plain object
+
+          // Add volunteer details if status is "requestacceptedbyvolunteer"
+          if (donation.status === "requestacceptedbyvolunteer") {
+            const volunteer = await User.findById(donation.volunteerId); // Fetch volunteer details
+            if (volunteer) {
+              donationObj.volunteerDetails = {
+                name: volunteer.name,
+                phone: volunteer.phone,
+                location: volunteer.location,
+                rating: volunteer.rating,
+              };
+            } else {
+              donationObj.volunteerDetails = null;
+            }
+          }
+
+          // Add receiver details if the donation has a receiver request
+          if (donation.receiverId) {
+            const receiverRequest = await Request.findById(donation.receiverId); // Fetch receiver details
+            if (receiverRequest) {
+              donationObj.receiverDetails = {
+                name: receiverRequest.receiverName,
+                phone: receiverRequest.receiverPhone,
+                address: receiverRequest.receiverAddress,
+                location: receiverRequest.receiverLocation,
+                quantity: receiverRequest.quantity,
+              };
+            } else {
+              // Fetch details from the active organization if receiverRequest is not found
+              const activeOrganization = await User.findById(donation.receiverId); // Fetch user details
+              if (activeOrganization && activeOrganization.isActive) {
+                donationObj.receiverDetails = {
+                  name: activeOrganization.name,
+                  phone: activeOrganization.phone,
+                  location: activeOrganization.location,
+                  role: activeOrganization.role, // Add role if required
+                };
+              } else {
+                donationObj.receiverDetails = null;
+              }
+            }
+          }
+
+          return donationObj;
+        })
     );
 
     if (matchedDonations.length === 0) {
@@ -265,10 +310,10 @@ const donarAccept = async (req, res) => {
         donations: matchedDonations,
       });
     }
-
-    // Return all matching donations
+    console.log("matched donations",matchedDonations);
+    // Return all matching donations with additional details
     return res.status(200).json({
-      msg: "Fetched Donations with required status",
+      msg: "Fetched donations with required status",
       donations: matchedDonations,
     });
   } catch (err) {
@@ -276,8 +321,6 @@ const donarAccept = async (req, res) => {
     res.status(500).json({ msg: "Error accepting donation", error: err });
   }
 };
-//if volunteer accepts the donation the status is changed to pickedByVolunteer
-
 const updateDonationStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -419,6 +462,76 @@ const getActiveRequests = async (req, res) => {
     res.status(400).json({ msg: "Error finding requests", error });
   }
 };
+
+// Updated Controller: "Need Volunteer" request (no status update, only setting needVolunteer to false)
+const requestVolunteer = async (req, res) => {
+  try {
+    console.log("Request Volunteer:", req.params);
+    const { id } = req.params;
+
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      { needVolunteer: true },
+      { new: true }
+    );
+
+    if (!donation) {
+      return res.status(404).json({ message: "Donation not found." });
+    }
+
+    res.status(200).json({ message: "Request sent for volunteer.", donation });
+  } catch (err) {
+    console.error("Error sending volunteer request:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Controller: "Donation Picked by Volunteer" (status changes to pickbyvolunteer)
+const DonationPickedByVolunteer = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      {
+        status: "pickbyvolunteer",
+        needVolunteer: false,
+      },
+      { new: true }
+    );
+
+    if (!donation) {
+      return res.status(404).json({ message: "Donation not found." });
+    }
+
+    res.status(200).json({ message: "Food picked successfully.", donation });
+  } catch (err) {
+    console.error("Error picking donation:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Controller: "Confirm Donation Completion" (status changes to completed)
+const confirmDonationCompletion = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const donation = await Donation.findByIdAndUpdate(
+      id,
+      { status: "completed" },
+      { new: true }
+    );
+
+    if (!donation) {
+      return res.status(404).json({ message: "Donation not found." });
+    }
+
+    res.status(200).json({ message: "Donation marked as completed.", donation });
+  } catch (err) {
+    console.error("Error completing donation:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 module.exports = {
   postDonation,
   deleteDonation,
@@ -429,7 +542,11 @@ module.exports = {
   donate,
   updateDonationStatus,
   markAsSelfVolunteer,
-  confirmPickup,
-  needVolunteer,
+  // confirmPickup,
+  // needVolunteer,
   getActiveRequests,
+
+  requestVolunteer,
+  DonationPickedByVolunteer,
+  confirmDonationCompletion,
 };

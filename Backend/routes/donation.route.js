@@ -14,7 +14,9 @@ const {
   confirmPickup,
   needVolunteer,
   getActiveRequests,
-  DonationPickedByVolunteer
+  requestVolunteer,
+  DonationPickedByVolunteer,
+  confirmDonationCompletion,
 } = require("../controllers/donation.controller");
 const router = express.Router();
 
@@ -46,11 +48,21 @@ router.patch('/:id/status', updateDonationStatus);
 router.patch('/donation/:id/self-volunteer', markAsSelfVolunteer);
 
 //confirm status has completed by donar(food accepted by volunteer) when volunter had came  to donar (pick by receiver ==>  fulfilled)
-router.patch('/:id/confirm', confirmPickup);
+//router.patch('/:id/confirm', confirmPickup);
 
 //donar requires a volunteer ==> needvolunteer : true
-router.patch("/need-volunteer/:id",needVolunteer)
+//router.patch("/need-volunteer/:id",needVolunteer)
 
 router.put('/donate/:requestId', donate);
+
+
+
+//donar requires a volunteer ==> needvolunteer : true
+router.patch("/need-volunteer/:id",requestVolunteer)
+// Mark as picked by volunteer
+router.patch("/:id/pick-food", DonationPickedByVolunteer);
+
+// Mark as completed
+router.patch("/:id/complete", confirmDonationCompletion);
 
 module.exports = router;

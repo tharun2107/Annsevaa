@@ -1,19 +1,22 @@
+
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { FaEdit, FaTimes } from "react-icons/fa";
-import "./styles/ProfileCard.css"; 
+import "./styles/ProfileCard.css"; // CSS file for styling
+import { toast } from "react-toastify"; // Import toast
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProfileCardModal = ({ isOpen, closeModal }) => {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ location: {} });
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  
-  const [isFetching, setIsFetching] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false); // Loading state for saving
+  const [isFetching, setIsFetching] = useState(false); // Loading state for fetching
 
   useEffect(() => {
     const fetchProfile = async () => {
-      setIsFetching(true); 
+      setIsFetching(true); // Start loading state
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -21,16 +24,17 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
           return;
         }
 
-        const response = await axios.get("http://localhost:3001/api/user/profile", {
+        const response = await api.get("http://localhost:3001/api/user/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setUser(response.data.user);
+        setEditedUser(response.data.user); // Initialize editedUser with fetched user data
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
-        setIsFetching(false);  
+        setIsFetching(false); // End loading state
       }
     };
 
@@ -38,14 +42,6 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
       fetchProfile();
     }
   }, [isOpen]);
-
-  const handleEditClick = (field) => {
-    setIsEditing(true);
-    setEditedUser({
-      ...user,
-      [field]: user[field],
-    });
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,14 +77,17 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
             },
           }));
           setLoadingLocation(false);
+          toast.success("Coordinates updated successfully!"); // Toast success for location update
         },
         (error) => {
           console.error("Geolocation error", error);
           setLoadingLocation(false);
+          toast.error("Failed to fetch location."); // Toast error for location fetch failure
         }
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
+      toast.error("Geolocation is not supported in this browser.");
     }
   };
 
@@ -96,7 +95,7 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.put(
+      const response = await api.put(
         "http://localhost:3001/api/user",
         {
           ...editedUser,
@@ -114,14 +113,16 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
       );
       setUser(response.data.updatedUser);
       setIsEditing(false);
+      toast.success("Profile updated successfully!"); // Toast success after saving profile
     } catch (error) {
       console.error("Error updating profile", error);
+      toast.error("Failed to update profile."); // Toast error on failure
     }
     setIsLoading(false);
   };
 
   if (!isOpen || isFetching) {
-    return null;  
+    return null; // Render nothing if modal is closed or fetching data
   }
 
   return (
@@ -145,10 +146,6 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
               ) : (
                 <span>{user.name}</span>
               )}
-              <FaEdit
-                className="edit-icon"
-                onClick={() => handleEditClick("name")}
-              />
             </div>
 
             <div className="profile-field">
@@ -163,40 +160,56 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
               ) : (
                 <span>{user.phone}</span>
               )}
-              <FaEdit
-                className="edit-icon"
-                onClick={() => handleEditClick("phone")}
-              />
             </div>
 
             <div className="profile-field">
               <strong>Location:</strong>
               <div>
-                <label>
-                  <strong>Landmark:</strong>
-                  <input
-                    type="text"
-                    name="landmark"
-                    value={editedUser.location.landmark || ""}
-                    onChange={handleLocationChange}
-                  />
-                </label>
-                <button className="update-coordinates-btn" onClick={handleLocationEdit}>
-                  {loadingLocation ? "Fetching location..." : "Update Coordinates"}
-                </button>
+                {isEditing ? (
+                  <div>
+                    <label>
+                      <strong>Landmark:</strong>
+                      <input
+                        type="text"
+                        name="landmark"
+                        value={editedUser.location.landmark || ""}
+                        onChange={handleLocationChange}
+                      />
+                    </label>
+                    <button
+                      className="update-coordinates-btn"
+                      onClick={handleLocationEdit}
+                    >
+                      {loadingLocation ? "Fetching location..." : "Update Coordinates"}
+                    </button>
+                  </div>
+                ) : (
+                  <span>{user.location?.landmark}</span>
+                )}
               </div>
-              <FaEdit
-                className="edit-icon"
-                onClick={() => handleEditClick("location")}
-              />
+            </div>
+
+            <div className="edit-btn-container">
+              {!isEditing && (
+                <button className="edit-btn" onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </button>
+              )}
             </div>
 
             {isEditing && (
               <div className="save-cancel">
-                <button className="save-btn" onClick={handleSaveClick} disabled={isLoading}>
+                <button
+                  className="save-btn"
+                  onClick={handleSaveClick}
+                  disabled={isLoading}
+                >
                   {isLoading ? "Saving..." : "Save"}
                 </button>
-                <button className="cancel-btn" onClick={() => setIsEditing(false)}>
+                <button
+                  className="cancel-btn"
+                  onClick={() => setIsEditing(false)}
+                >
                   Cancel
                 </button>
               </div>
