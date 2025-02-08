@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../api/axios";
 
@@ -29,7 +29,7 @@ export const Receiver = () => {
       if (response.data.success === false) {
         toast.error(response.data.message);
       } else if (response.data.success === true && response.status === 200) {
-        setDonations([...response.data.donation]);
+        setDonations([...response.data.pendingDonations]);
         setApprovedDonations([...response.data.approvedDonations]);
         console.log(approvedDonations);
       } else if (response.data.success === true && response.status === 204) {

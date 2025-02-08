@@ -508,21 +508,21 @@
 // export default DonateForm;
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import {
   FaCamera,
   FaClock,
+  FaMapMarkerAlt,
   FaUtensils,
   FaWeight,
-  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import "./styles/DonateForm.css";
 import api from "../api/axios";
+import "./styles/DonateForm.css";
 
 const DonateForm = ({
   receiverId,

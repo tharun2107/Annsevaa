@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import { resolvePath, useNavigate } from "react-router-dom";
-import "./styles/Register.css";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import "./styles/Register.css";
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -92,7 +92,7 @@ const Registration = () => {
   return (
     <div className="registration-container">
       {isLoading ? (
-        <div className="registration-form">
+        <div className="registration-form animated-form">
           <div className="spinner"></div>
           <h2>⏳ Just a Moment!</h2>
           <p>
@@ -101,7 +101,7 @@ const Registration = () => {
           </p>
         </div>
       ) : (
-        <div className="registration-form">
+        <div className="registration-form animated-form">
           <h1>Registration</h1>
           <input
             type="text"

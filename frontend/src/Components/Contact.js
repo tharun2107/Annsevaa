@@ -39,7 +39,8 @@ const Contact = () => {
           <textarea
             id="message"
             name="message"
-            placeholder="Enter Message"
+            placeholder="Enter your message here"
+            rows="6"
           ></textarea>
           <div className="contact-inputs">
             <input
@@ -48,7 +49,12 @@ const Contact = () => {
               name="name"
               placeholder="Enter your name"
             />
-            <input id="email" type="email" name="email" placeholder="Email" />
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+            />
           </div>
           <input
             id="subject"
@@ -56,15 +62,15 @@ const Contact = () => {
             name="subject"
             placeholder="Enter Subject"
           />
-          <button onClick={send}>Send</button>
+          <button onClick={send}>Send Message</button>
         </div>
         <div className="contact-info">
           <div className="contact-item">
             <i className="icon home-icon"></i>
             <p>
-              <strong>AnnSeva</strong> organization, 
+              <strong>AnnSeva</strong> organization,
               <br />
-            Ibrahimpatnam,Hyderabad, 501510
+              Ibrahimpatnam, Hyderabad, 501510
             </p>
           </div>
           <div className="contact-item">
@@ -78,9 +84,8 @@ const Contact = () => {
           <div className="contact-item">
             <i className="icon email-icon"></i>
             <p>
-             <strong> annsevaorg@gmail.com</strong>
+              <strong>annsevaorg@gmail.com</strong>
               <br />
-               
             </p>
           </div>
         </div>

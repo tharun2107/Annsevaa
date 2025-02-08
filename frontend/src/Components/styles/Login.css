@@ -44,7 +44,7 @@
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  color: #fff;
+  color: #fff !important;
 }
 
 .login-container {
@@ -59,7 +59,7 @@ body {
       rgba(0, 0, 0, 0.5),
       rgba(0, 0, 0, 0.6)
     ),
-    url("../images/registerback.jpg") no-repeat center center / cover !important;
+    url("../images/loginback.jpg") no-repeat center center / cover !important;
   overflow: hidden;
   
 }
@@ -76,7 +76,7 @@ body {
 
 h1 {
   font-size: 2.5rem;
-  color: #fff;
+  color: #10af48 !important;
   margin-bottom: 20px;
 }
 

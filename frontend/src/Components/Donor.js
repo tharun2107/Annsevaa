@@ -2,10 +2,10 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import DonateForm from "./DonateForm";
-import "./styles/Donor.css";
 import api from "../api/axios";
 import AcceptDonation from "./AcceptDonation";
+import DonateForm from "./DonateForm";
+import "./styles/Donor.css";
 
 import Filter from "./Filter";
 

@@ -1,6 +1,7 @@
 /* Home.css */
 .home {
     font-family: Arial, sans-serif;
+    color:green !important
 }
 .hero-section {
     display: flex;
@@ -10,7 +11,20 @@
     background-color: #f8f9fa;
     position: relative;
 }
-
+.animated-form {
+    animation: slideIn 1s ease-in-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 .hero-content {
     max-width: 50%;
 }

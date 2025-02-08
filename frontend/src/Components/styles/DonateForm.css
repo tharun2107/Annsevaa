@@ -1,5 +1,13 @@
+.modal-backdrop {
+  
+  background: rgba(38, 41, 38, 0.8) !important; /* Dark green with opacity */
+  backdrop-filter: blur(8px);
+  opacity: 1 !important;
+}
+
 .custom-modal {
     width: 90% !important;
+    color:green !important;
   }
   
   .image-preview {
@@ -10,6 +18,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;  
+    color:green !important;
   }
   
   .image-preview img {
@@ -17,15 +26,21 @@
     max-height: 100%;
     object-fit: contain; 
   }
-  
-  .custom-modal .modal-content {
-    width: 100%;  
-  }
-  
-  .modal {
-    --bs-modal-width: 800px;
-  }
-  
+  .modal-dialog {
+    max-width: 100%; /* Increase width as needed */
+    display: flex;
+    justify-content: center;
+}
+
+.modal-content {
+    width: 100%;
+    padding: 20px;
+}
+
+.custom-modal .modal-content {
+    width: 90% !important;  /* Adjust width to fill the dialog */
+}
+
   @media (max-width: 992px) {
     .custom-modal {
       width: 95% !important;
@@ -78,4 +93,7 @@
     .form-label {
       font-size: 12px;  
     }
+  }
+  label{
+    color:green !important
   }
