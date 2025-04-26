@@ -190,12 +190,12 @@ const Header = () => {
 
   const getHistoryLink = () => {
     if (!user) return "/history";
-    return `/${user.role}/history`; // Constructs the route dynamically based on role
+    return `/${user.role}/history`;  
   };
 
   return (
     <header className="header">
-      <div className="logo">Anadh Seva</div>
+      <div className="logo">AnnSeva</div>
       <div className="menu-icon" onClick={toggleMenu}>
         ☰
       </div>

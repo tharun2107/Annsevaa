@@ -32,17 +32,26 @@ const Login = () => {
 
   const sendOtp = async () => {
     try {
-       
+      // Check if the user exists
+      const checkuser = await api.post("http://localhost:3001/api/auth/checkuser", { phone });
+  
+      // If the user exists, send OTP
       await api.post("http://localhost:3001/api/auth/send-otp", { phone });
       setIsOtpSent(true);
       setErrorMessage("");
       toast.success("OTP sent to your phone");
     } catch (error) {
-      setErrorMessage("Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
+      // Handle 404 error (user not found)
+      if (error.response && error.response.status === 404) {
+        setErrorMessage(error.response.data.message || "User not found");
+        toast.error(error.response.data.message || "User not found");
+      } else {
+        // Handle other errors
+        setErrorMessage("Failed to send OTP. Please try again.");
+        toast.error("Failed to send OTP. Please try again.");
+      }
     }
   };
-
   const verifyAndLogin = async () => {
     try {
       const otpString = otp.join("");

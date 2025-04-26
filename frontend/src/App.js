@@ -18,6 +18,7 @@ import Contact from './Components/Contact';
 import NotFound from './Components/NotFound';
 import Unauthorized from './Components/Unauthorised';
 import ProtectedRoutes from './Components/ProtectedRoutes'; // Import the ProtectedRoutes component
+import VolunteerTracking from './Components/VolunteerTracking';
 
 function App() {
   return (
@@ -50,13 +51,13 @@ function App() {
           <Route
             path="/volunteer"
             element={
-              <ProtectedRoutes roles={['volunteer', 'receiver', 'donor']}>
+              <ProtectedRoutes roles={['volunteer']}>
                 <Volunteer />
               </ProtectedRoutes>
             }
           />
 
-          {/* Protected History Routes */}
+          
           <Route
             path="/donor/history"
             element={
@@ -82,7 +83,34 @@ function App() {
             }
           />
 
-          {/* Admin Dashboard (if needed) */}
+          <Route
+            path="/donor/volunteerTracking"
+            element={
+              <ProtectedRoutes roles={['donor']}>
+                 <VolunteerTracking />
+              </ProtectedRoutes>
+            }
+          />
+           <Route
+            path="/receiver/volunteerTracking"
+            element={
+              <ProtectedRoutes roles={['receiver']}>
+                <VolunteerTracking />
+              </ProtectedRoutes>
+            }
+          />
+           <Route
+            path="/volunteer/volunteerTracking"
+            element={
+              <ProtectedRoutes roles={['volunteer']}>
+                <VolunteerTracking />
+              </ProtectedRoutes>
+            }
+          />
+
+          
+
+        
           <Route
             path="/admin"
             element={
@@ -91,6 +119,8 @@ function App() {
               </ProtectedRoutes>
             }
           />
+
+
 
           {/* Contact Page (if needed) */}
           <Route path="/contactus" element={<Contact />} />

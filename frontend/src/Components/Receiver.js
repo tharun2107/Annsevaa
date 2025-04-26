@@ -44,11 +44,20 @@ export const Receiver = () => {
         toast.error("Unexpected error occurred.");
       }
     }
+
+
   }, []);
 
   useEffect(() => {
+    // Initial fetch
     fetchDonations();
-  }, [fetchDonations]);
+
+    // Set up auto-refresh every 30 seconds (adjust interval as needed)
+    const intervalId = setInterval(fetchDonations, 10000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleApprove = async (donationId) => {
     try {
@@ -92,6 +101,8 @@ export const Receiver = () => {
       }
     }
   };
+
+
 
   const handleReject = async (donationId) => {
     try {
@@ -373,6 +384,9 @@ export const Receiver = () => {
                   </p>
                   <p>
                     <strong>Phone:</strong> {donation.volunteerPhone}
+                  </p>
+                  <p>
+                    <strong>Status :</strong> {donation.status}
                   </p>
                   <button
                     onClick={() => handleReceivedFood(donation.donationId)}

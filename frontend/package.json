@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "countup": "^1.8.2",
@@ -20,7 +21,8 @@
     "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
     "react-scroll-parallax": "^3.4.5",
-    "react-toastify": "^11.0.3"
+    "react-toastify": "^11.0.3",
+    "socket.io-client": "^4.8.1"
   },
   "scripts": {
     "start": "react-scripts start",

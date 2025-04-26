@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./styles/Register.css";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -56,14 +58,28 @@ const Registration = () => {
     setIsLoading(true);
     try {
       console.log("Sending OTP with data:", formData);
+      
+      const response = await api.post(
+        "http://localhost:3001/api/auth/checkuserexits",
+        { phone: formData.phone }
+      );
+
       await api.post("http://localhost:3001/api/auth/send-otp", {
         phone: formData.phone,
       });
       setIsOtpSent(true);
       setErrorMessage("");
-    } catch (err) {
-      setErrorMessage("Failed to send OTP.");
-    } finally {
+    } catch (error) {
+          // Handle 404 error (user not found)
+          if (error.response && error.response.status === 404) {
+            setErrorMessage(error.response.data.message || "User not found");
+            toast.error(error.response.data.message || "User not found");
+          } else {
+            // Handle other errors
+            setErrorMessage("Failed to send OTP. Please try again.");
+            toast.error("Failed to send OTP. Please try again.");
+          }
+        }finally {
       setIsLoading(false);
     }
   };
