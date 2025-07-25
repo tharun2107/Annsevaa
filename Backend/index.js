@@ -23,7 +23,12 @@ const volunteerRoutes = require("./routes/volunteer.route.js");
 const historyRoutes = require("./routes/donationHistoryRoutes.js");
 const metrics = require("./routes/metrics.route.js");
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://annseva-si6t.onrender.com'
+  ]
+}));
 app.use(express.json());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
