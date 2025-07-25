@@ -30,7 +30,12 @@ const registerHandler = async (req, res) => {
       role,
     });
     await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
+    // Generate JWT token after registration
+    const token = jwt.sign({ id: user._id, phone: user.phone, role: user.role }, process.env.JWT_SECRET, { expiresIn: '10h' });
+    // Exclude password from user object
+    const userObj = user.toObject();
+    delete userObj.password;
+    res.status(201).json({ message: 'User registered successfully', token, user: userObj });
   } catch (error) {
     console.error('Error in registration:', error);
     res.status(500).json({ message: 'Registration failed', error: error.message });

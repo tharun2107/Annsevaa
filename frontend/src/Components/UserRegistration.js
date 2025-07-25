@@ -81,6 +81,7 @@ const Registration = () => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setErrorMessage("");
+      alert("Registration successful! You are now logged in.");
       toast.success("Registration successful! You are now logged in.");
       setTimeout(() => {
         navigate("/");

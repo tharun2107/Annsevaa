@@ -5,15 +5,16 @@ import "react-toastify/dist/ReactToastify.css";
 import "./styles/Login.css";
 import api from "../api/axios"
 const Login = () => {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("http://localhost:3001/api/auth/login", { phone });
+      const response = await api.post("http://localhost:3001/api/auth/login", { email, password });
       if (response.status === 200) {
-        const redirectionUrl = response.data.redirectUrl;
+        const redirectionUrl = response.data.redirectUrl || "/";
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         toast.success("Login successful");
@@ -35,11 +36,22 @@ const Login = () => {
       <div className="login-form animated-form">
         <h1>Login</h1>
         <input
-          type="text"
-          placeholder="Enter your phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="input-field"
+          autoComplete="email"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input-field"
+          autoComplete="current-password"
+          required
         />
         <button onClick={handleLogin} className="submit-button">
           Login
