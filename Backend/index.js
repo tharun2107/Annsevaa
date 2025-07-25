@@ -65,5 +65,6 @@ app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => {
+  console.log("url",process.env.MONGO_URL)
   console.log(`Proxy server listening at http://localhost:${PORT}`);
 });
