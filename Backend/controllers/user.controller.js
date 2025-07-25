@@ -114,6 +114,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const { mongo } = require("mongoose");
 const FAST2SMS_API_KEY = process.env.FAST_SMS_API_KEY;
+const bcrypt = require('bcrypt');
 
 // Dummy database to store OTPs
 const otpStore = {};
@@ -186,61 +187,46 @@ const verifyotp = async (req, res) => {
   }
 };
 
-// Route to register user
+// Register user (password-based)
 const register = async (req, res) => {
-  const { name, phone, location, email, role } = req.body;
+  const { name, phone, password, location, email, role } = req.body;
   try {
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
-      return res.status(400).json({ msg: "Phone number already registered" });
+      return res.status(400).json({ msg: 'Phone number already registered' });
     }
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       name,
       phone,
+      password: hashedPassword,
       location,
       email,
       role,
     });
-
     await user.save();
-    const token = jwt.sign(
-      { id: user._id, role: role },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
-    );
-    res
-      .status(201)
-      .json({ msg: "User registered successfully", token, user, role: role });
+    res.status(201).json({ msg: 'User registered successfully' });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to register user", error });
+    res.status(500).json({ msg: 'Registration failed', error: error.message });
   }
 };
 
-// Login User
+// Login user (password-based)
 const login = async (req, res) => {
-  const { phone } = req.body;
+  const { phone, password } = req.body;
   try {
-    const user = await User.findOne({ phone });
+    const user = await User.findOne({ phone }).select('+password');
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(400).json({ msg: 'Invalid phone or password' });
     }
-
-    const token = jwt.sign(
-      { id: user._id, role: role },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "5h",
-      }
-    );
-
-    res
-      .status(200)
-      .json({ msg: "Login successful", token, user, role: user.role });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Invalid phone or password' });
+    }
+    const token = jwt.sign({ id: user._id, phone: user.phone, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5h' });
+    res.status(200).json({ msg: 'Login successful', token });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to login", error });
+    res.status(500).json({ msg: 'Login failed', error: error.message });
   }
 };
 

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     long: { type: Number, required: true },
   },  
   phone: { type: String, required: true },
+  password: { type: String, required: true, select: false }, // Added password field
   isActive: { type: Boolean, default: true },
   isAdmin: { type: Boolean, default: false },
   role: {

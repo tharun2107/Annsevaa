@@ -29,7 +29,5 @@ const router = express.Router();
 
 router.post('/register', registerHandler);
 router.post('/login', loginHandler);
-router.post('/send-otp', sendOtpHandler);
-router.post('/verify-otp', verifyOtpHandler);
 
 module.exports = router;

@@ -31,7 +31,5 @@ router.put("/", updateUser);
 router.get("/profile", getProfile);
 router.post("/register", register);
 router.post("/login", login);
-router.post("/sent-otp",SendOtp);
-router.post("/verify-otp",verifyotp);
 
 module.exports = router;
