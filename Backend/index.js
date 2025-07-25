@@ -30,9 +30,12 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Connect to MongoDB
 const url = process.env.MONGO_URL;
-mongoose
-  .connect(url)
-  .then(() => console.log("Connected to Database successfully..."));
+mongoose.connect(url)
+  .then(() => console.log("Connected to Database successfully..."))
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err.message);
+    process.exit(1); // Optionally exit the process if DB connection fails
+  });
 
 // Serve static images
 app.use("/images", express.static(path.join(__dirname, "images")));
