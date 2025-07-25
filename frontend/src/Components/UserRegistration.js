@@ -14,8 +14,6 @@ const Registration = () => {
     role: "donor",
     location: { landmark: "", lat: "", long: "" },
   });
-  const [otp, setOtp] = useState("");
-  const [isOtpSent, setIsOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -54,47 +52,14 @@ const Registration = () => {
     }
   };
 
-  const sendOtp = async () => {
+  const handleRegister = async () => {
     setIsLoading(true);
     try {
-      console.log("Sending OTP with data:", formData);
-      
-      const response = await api.post(
-        "http://localhost:3001/api/auth/checkuserexits",
-        { phone: formData.phone }
-      );
-
-      await api.post("http://localhost:3001/api/auth/send-otp", {
-        phone: formData.phone,
-      });
-      setIsOtpSent(true);
-      setErrorMessage("");
-    } catch (error) {
-          // Handle 404 error (user not found)
-          if (error.response && error.response.status === 404) {
-            setErrorMessage(error.response.data.message || "User not found");
-            toast.error(error.response.data.message || "User not found");
-          } else {
-            // Handle other errors
-            setErrorMessage("Failed to send OTP. Please try again.");
-            toast.error("Failed to send OTP. Please try again.");
-          }
-        }finally {
-      setIsLoading(false);
-    }
-  };
-
-  const verifyAndRegister = async () => {
-    try {
-      await api.post("http://localhost:3001/api/auth/verify-otp", {
-        phone: formData.phone,
-        otp,
-      });
-
       const response = await api.post(
         "http://localhost:3001/api/auth/register",
         formData
       );
+      console.log(response.data);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setErrorMessage("");
@@ -102,6 +67,9 @@ const Registration = () => {
       navigate(redirectUrl);
     } catch (err) {
       setErrorMessage(err.response?.data?.msg || "Failed to register.");
+      toast.error(err.response?.data?.msg || "Failed to register.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,8 +80,7 @@ const Registration = () => {
           <div className="spinner"></div>
           <h2>⏳ Just a Moment!</h2>
           <p>
-            Good things take time. Your OTP is on its way and will arrive
-            shortly...
+            Good things take time. Please wait while we process your registration...
           </p>
         </div>
       ) : (
@@ -161,26 +128,9 @@ const Registration = () => {
             <option value="receiver">Receiver</option>
             <option value="volunteer">Volunteer</option>
           </select>
-
-          {isOtpSent ? (
-            <>
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="input-field"
-              />
-              <button onClick={verifyAndRegister} className="submit-button">
-                Verify & Register
-              </button>
-            </>
-          ) : (
-            <button onClick={sendOtp} className="submit-button">
-              Send OTP
+            <button onClick={handleRegister} className="submit-button">
+              Register
             </button>
-          )}
-
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
       )}

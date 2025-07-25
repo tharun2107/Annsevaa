@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip } from "react-leaflet";
-import io from "socket.io-client";
+// import io from "socket.io-client"; // Commented out socket.io-client
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
 
-const socket = io("http://localhost:5003"); // Connect to backend
+// const socket = io("http://localhost:5003"); // Commented out socket.io connection
 const VolunteerTracking = ({ donor, receiver }) => {
     console.log("donor", donor, "receiver", receiver);
   
@@ -29,7 +29,7 @@ const VolunteerTracking = ({ donor, receiver }) => {
           const { latitude, longitude } = position.coords;
           setVolunteerLocation({ lat: latitude, lng: longitude });
           console.log("volunteer updated location",{ volunteerId, lat: latitude, lng: longitude })
-          socket.emit("updateVolunteerLocation", { volunteerId, lat: latitude, lng: longitude });
+          // socket.emit("updateVolunteerLocation", { volunteerId, lat: latitude, lng: longitude }); // Commented out
         },
         (error) => console.error("Error getting location:", error),
         { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
@@ -38,33 +38,34 @@ const VolunteerTracking = ({ donor, receiver }) => {
       return () => navigator.geolocation.clearWatch(watchId);
     }, []);
   
-    useEffect(() => {
-      socket.on("updateVolunteer", async ({ location, routeToDonor, routeToReceiver }) => {
-        setVolunteerLocation(location);
-  
-        if (routeToDonor && routeToDonor.length > 0) {
-          setRouteToDonor(routeToDonor);
-          fetchEstimatedTime(routeToDonor, "donor");
-        } else {
-          const newRouteToDonor = await fetchRoute(location, transformedDonor);
-          setRouteToDonor(newRouteToDonor);
-          fetchEstimatedTime(newRouteToDonor, "donor");
-        }
-  
-        if (routeToReceiver && routeToReceiver.length > 0) {
-          setRouteToReceiver(routeToReceiver);
-          fetchEstimatedTime(routeToReceiver, "receiver");
-        } else {
-          const newRouteToReceiver = await fetchRoute(transformedDonor, transformedReceiver);
-          setRouteToReceiver(newRouteToReceiver);
-          fetchEstimatedTime(newRouteToReceiver, "receiver");
-        }
-      });
-  
-      return () => {
-        socket.off("updateVolunteer");
-      };
-    }, []);
+  // Commented out socket event listeners
+  // useEffect(() => {
+  //   socket.on("updateVolunteer", async ({ location, routeToDonor, routeToReceiver }) => {
+  //     setVolunteerLocation(location);
+  //
+  //     if (routeToDonor && routeToDonor.length > 0) {
+  //       setRouteToDonor(routeToDonor);
+  //       fetchEstimatedTime(routeToDonor, "donor");
+  //     } else {
+  //       const newRouteToDonor = await fetchRoute(location, transformedDonor);
+  //       setRouteToDonor(newRouteToDonor);
+  //       fetchEstimatedTime(newRouteToDonor, "donor");
+  //     }
+  //
+  //     if (routeToReceiver && routeToReceiver.length > 0) {
+  //       setRouteToReceiver(routeToReceiver);
+  //       fetchEstimatedTime(routeToReceiver, "receiver");
+  //     } else {
+  //       const newRouteToReceiver = await fetchRoute(transformedDonor, transformedReceiver);
+  //       setRouteToReceiver(newRouteToReceiver);
+  //       fetchEstimatedTime(newRouteToReceiver, "receiver");
+  //     }
+  //   });
+  //
+  //   return () => {
+  //     socket.off("updateVolunteer");
+  //   };
+  // }, []);
   
     const fetchRoute = async (start, end) => {
       try {
@@ -119,9 +120,9 @@ const VolunteerTracking = ({ donor, receiver }) => {
           console.error(`❌ Error fetching estimated time for ${type}:`, error);
         }
       };
-    const assignVolunteer = () => {
-      socket.emit("volunteerAssigned", { volunteerId, donor: transformedDonor, receiver: transformedReceiver });
-    };
+  // const assignVolunteer = () => {
+  //   socket.emit("volunteerAssigned", { volunteerId, donor: transformedDonor, receiver: transformedReceiver });
+  // };
   
     const containerStyle = {
         width:"800px",
@@ -136,9 +137,9 @@ const VolunteerTracking = ({ donor, receiver }) => {
   
     return (
       <div style={containerStyle}>
-        <button onClick={assignVolunteer} style={{ padding: "10px", marginBottom: "10px" }}>
+        {/* <button onClick={assignVolunteer} style={{ padding: "10px", marginBottom: "10px" }}>
           Track my location
-        </button>
+        </button> */}
         {estimatedTimeToDonor && (
           <p>
             Estimated Time from Volunteer to Donor: {estimatedTimeToDonor}
