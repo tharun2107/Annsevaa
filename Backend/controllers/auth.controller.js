@@ -13,6 +13,7 @@ console.log(FAST2SMS_API_KEY)
 
 // Register handler (password-based)
 const registerHandler = async (req, res) => {
+  console.log('Register endpoint called. Request body:', req.body);
   const { name, email, phone, password, location, role } = req.body;
   try {
     const existingUser = await User.findOne({ phone });
@@ -31,6 +32,7 @@ const registerHandler = async (req, res) => {
     await user.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
+    console.error('Error in registration:', error);
     res.status(500).json({ message: 'Registration failed', error: error.message });
   }
 };
@@ -47,7 +49,7 @@ const loginHandler = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid phone or password' });
     }
-    const token = jwt.sign({ id: user._id, phone: user.phone, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5h' });
+    const token = jwt.sign({ id: user._id, phone: user.phone, role: user.role }, process.env.JWT_SECRET, { expiresIn: '10h' });
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });

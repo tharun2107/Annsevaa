@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
@@ -11,9 +10,11 @@ const Registration = () => {
     name: "",
     phone: "",
     email: "",
+    password: "",
     role: "donor",
     location: { landmark: "", lat: "", long: "" },
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -30,9 +31,16 @@ const Registration = () => {
               long: position.coords.longitude,
             },
           }));
+          console.log('📍 Location set:', position.coords.latitude, position.coords.longitude);
         },
-        () => setErrorMessage("Failed to fetch location.")
+        (err) => {
+          console.error("Location Error:", err.message);
+          toast.error("⚠️ Location access denied or failed to fetch.");
+          setErrorMessage("Failed to fetch location.");
+        }
       );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
     }
   };
 
@@ -52,22 +60,36 @@ const Registration = () => {
     }
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
+
+    if (!formData.location.lat || !formData.location.long) {
+      toast.error("Please allow location access to complete registration.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      console.log('📝 Submitting registration with formData:', formData);
       const response = await api.post(
         "http://localhost:3001/api/auth/register",
         formData
       );
-      console.log(response.data);
+
+      console.log('✅ Registration response:', response.data);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setErrorMessage("");
-      const redirectUrl = response.data.redirectUrl;
-      navigate(redirectUrl);
+      toast.success("Registration successful! You are now logged in.");
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
-      setErrorMessage(err.response?.data?.msg || "Failed to register.");
-      toast.error(err.response?.data?.msg || "Failed to register.");
+      console.error('❌ Registration error:', err);
+      const msg = err.response?.data?.message || "Failed to register.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -79,59 +101,78 @@ const Registration = () => {
         <div className="registration-form animated-form">
           <div className="spinner"></div>
           <h2>⏳ Just a Moment!</h2>
-          <p>
-            Good things take time. Please wait while we process your registration...
-          </p>
+          <p>Good things take time. Please wait while we process your registration...</p>
         </div>
       ) : (
         <div className="registration-form animated-form">
           <h1>Registration</h1>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="input-field"
-          />
-          <input
-            type="text"
-            name="phone"
-            placeholder="Phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="input-field"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="input-field"
-          />
-          <input
-            type="text"
-            name="landmark"
-            placeholder="Landmark"
-            value={formData.location.landmark}
-            onChange={handleChange}
-            className="input-field"
-          />
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="input-field"
-          >
-            <option value="donor">Donor</option>
-            <option value="receiver">Receiver</option>
-            <option value="volunteer">Volunteer</option>
-          </select>
-            <button onClick={handleRegister} className="submit-button">
+            <form onSubmit={handleRegister}>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleChange}
+                className="input-field"
+                autoComplete="name"
+                required
+              />
+              <input
+                type="text"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="input-field"
+                autoComplete="tel"
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="input-field"
+                autoComplete="email"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="input-field"
+                autoComplete="current-password"
+                required
+              />
+              <input
+                type="text"
+                name="landmark"
+                placeholder="Landmark"
+                value={formData.location.landmark}
+                onChange={handleChange}
+                className="input-field"
+                autoComplete="off"
+                required
+              />
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="input-field"
+                required
+              >
+                <option value="donor">Donor</option>
+                <option value="receiver">Receiver</option>
+                <option value="volunteer">Volunteer</option>
+              </select>
+              <button type="submit" className="submit-button">
               Register
             </button>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+            </form>
         </div>
       )}
     </div>
