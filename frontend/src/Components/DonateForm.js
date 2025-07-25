@@ -68,7 +68,7 @@
 
 //     try {
 //       const response = await api.post(
-//         "http://localhost:3001/api/donation",
+//         "https://annsevaa.onrender.com/api/donation",
 //         donationData,
 //         {
 //           headers: {
@@ -323,7 +323,7 @@
 
 //     try {
 //       const response = await api.post(
-//         "http://localhost:3001/api/donation",
+//         "https://annsevaa.onrender.com/api/donation",
 //         donationData,
 //         {
 //           headers: {
@@ -594,7 +594,7 @@ const DonateForm = ({
     try {
       // console.log(donationData);
       const response = await api.post(
-        "http://localhost:3001/api/donation",
+        "https://annsevaa.onrender.com/api/donation",
         donationData,
         {
           headers: {
@@ -619,7 +619,7 @@ const DonateForm = ({
 
       // Fetch the updated list of donations
       const updatedDonations = await api.get(
-        "http://localhost:3001/api/donation/getDonations",
+        "https://annsevaa.onrender.com/api/donation/getDonations",
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),

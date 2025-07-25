@@ -43,7 +43,7 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         const donationsRes = await axios.get(
-          "http://localhost:3001/admin/donations",
+          "https://annsevaa.onrender.com/admin/donations",
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("token"),
@@ -51,14 +51,14 @@ const AdminDashboard = () => {
           }
         );
         const requestsRes = await axios.get(
-          "http://localhost:3001/admin/requests",
+          "https://annsevaa.onrender.com/admin/requests",
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("token"),
             },
           }
         );
-        const usersRes = await axios.get("http://localhost:3001/admin/users", {
+        const usersRes = await axios.get("https://annsevaa.onrender.com/admin/users", {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },

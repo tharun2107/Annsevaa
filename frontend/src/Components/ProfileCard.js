@@ -24,7 +24,7 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
           return;
         }
 
-        const response = await api.get("http://localhost:3001/api/user/profile", {
+        const response = await api.get("https://annsevaa.onrender.com/api/user/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -96,7 +96,7 @@ const ProfileCardModal = ({ isOpen, closeModal }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.put(
-        "http://localhost:3001/api/user",
+        "https://annsevaa.onrender.com/api/user",
         {
           ...editedUser,
           location: {

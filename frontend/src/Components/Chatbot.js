@@ -19,7 +19,7 @@ const Chatbot = () => {
     setIsTyping(true);
 
     try {
-      const res = await api.post("http://localhost:3001/chatbot", { message: input });
+      const res = await api.post("https://annsevaa.onrender.com/chatbot", { message: input });
       setMessages([...newMessages, { text: res.data.response, fromBot: true }]);
     } catch (error) {
       setMessages([...newMessages, { text: "Error connecting to chatbot.", fromBot: true }]);

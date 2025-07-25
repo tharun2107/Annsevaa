@@ -72,7 +72,7 @@ const DonorPage = () => {
         }
 
         const response = await api.get(
-          "http://localhost:3001/api/donation/getDonations",
+          "https://annsevaa.onrender.com/api/donation/getDonations",
           {
             headers: {
               Authorization: `Bearer ${token}`,

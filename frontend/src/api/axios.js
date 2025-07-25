@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // Replace with your backend API URL
+  baseURL: 'https://annsevaa.onrender.com/api', // Replace with your backend API URL
 });
 
 // Add a request interceptor to include the token in headers

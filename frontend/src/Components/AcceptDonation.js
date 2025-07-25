@@ -17,7 +17,7 @@ const AcceptDonation = () => {
         return;
       }
 
-      const response = await api.get("http://localhost:3001/api/donation", {
+      const response = await api.get("https://annsevaa.onrender.com/api/donation", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -46,7 +46,7 @@ const AcceptDonation = () => {
       const token = localStorage.getItem("token");
 
       const response = await api.patch(
-        `http://localhost:3001/api/donation/${donation._id}/status`,
+        `https://annsevaa.onrender.com/api/donation/${donation._id}/status`,
         { status: "pickbydonor" },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +67,7 @@ const AcceptDonation = () => {
     try {
       const token = localStorage.getItem("token");
       await api.patch(
-        `http://localhost:3001/api/donation/${donation._id}/status`,
+        `https://annsevaa.onrender.com/api/donation/${donation._id}/status`,
         { status: "completed" },
         {
           headers: {
@@ -90,7 +90,7 @@ const AcceptDonation = () => {
       const token = localStorage.getItem("token");
 
       const response = await api.patch(
-        `http://localhost:3001/api/donation/need-volunteer/${donation._id}`,
+        `https://annsevaa.onrender.com/api/donation/need-volunteer/${donation._id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -112,7 +112,7 @@ const AcceptDonation = () => {
       const token = localStorage.getItem("token");
 
       const response = await api.patch(
-        `http://localhost:3001/api/donation/${donation._id}/pick-food`,
+        `https://annsevaa.onrender.com/api/donation/${donation._id}/pick-food`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

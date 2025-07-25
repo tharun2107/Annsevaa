@@ -3,7 +3,7 @@ import HistoryPage from "./HistoryPage";
 
 export const ReceiverHistory = () => (
   <HistoryPage
-    apiEndpoint="http://localhost:3001/api/history/receiver/history"
+    apiEndpoint="https://annsevaa.onrender.com/api/history/receiver/history"
     type="receiver"
   />
 );

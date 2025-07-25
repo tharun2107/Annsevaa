@@ -18,7 +18,7 @@ export const Receiver = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.get(
-        "http://localhost:3001/api/requests/getDonation",
+        "https://annsevaa.onrender.com/api/requests/getDonation",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ export const Receiver = () => {
       const isVolunteer = volunteerStatus[donationId] || false;
 
       const response = await api.post(
-        "http://localhost:3001/api/requests/accept",
+        "https://annsevaa.onrender.com/api/requests/accept",
         {
           donationId: donationId,
           approveDonation: true,
@@ -108,7 +108,7 @@ export const Receiver = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.post(
-        "http://localhost:3001/api/requests/reject",
+        "https://annsevaa.onrender.com/api/requests/reject",
         { donationId },
         {
           headers: {
@@ -143,7 +143,7 @@ export const Receiver = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.post(
-        "http://localhost:3001/api/requests",
+        "https://annsevaa.onrender.com/api/requests",
         { quantity: requestQuantity },
         {
           headers: {
@@ -183,7 +183,7 @@ export const Receiver = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.post(
-        "http://localhost:3001/api/requests/completed",
+        "https://annsevaa.onrender.com/api/requests/completed",
         { donationId },
         {
           headers: {

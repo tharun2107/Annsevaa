@@ -15,7 +15,7 @@
 //   const fetchDonations = async () => {
 //     const token = localStorage.getItem("token");
 //     try {
-//       const response = await axios.get("http://localhost:3001/api/volunteer", {
+//       const response = await axios.get("https://annsevaa.onrender.com/api/volunteer", {
 //         headers: {
 //           "Content-Type": "application/json",
 //           Authorization: "Bearer " + token,
@@ -133,7 +133,7 @@
 //                           const token = localStorage.getItem("token");
 //                           try {
 //                             const response = await axios.patch(
-//                               `http://localhost:3001/api/volunteer/accept/${donationId}`,
+//                               `https://annsevaa.onrender.com/api/volunteer/accept/${donationId}`,
 //                               {},
 //                               {
 //                                 headers: {
@@ -259,7 +259,7 @@
 //                           const token = localStorage.getItem("token");
 //                           try {
 //                             const response = await axios.patch(
-//                               `http://localhost:3001/api/volunteer/pickedfood/${donationId}`,
+//                               `https://annsevaa.onrender.com/api/volunteer/pickedfood/${donationId}`,
 //                               {},
 //                               {
 //                                 headers: {
@@ -334,7 +334,7 @@
 //   const fetchDonations = async () => {
 //     const token = localStorage.getItem("token");
 //     try {
-//       const response = await axios.get("http://localhost:3001/api/volunteer", {
+//       const response = await axios.get("https://annsevaa.onrender.com/api/volunteer", {
 //         headers: {
 //           "Content-Type": "application/json",
 //           Authorization: "Bearer " + token,
@@ -352,7 +352,7 @@
 //   const acceptedDonation = async () => {
 //     const token = localStorage.getItem("token");
 //     try {
-//       const response = await axios.get("http://localhost:3001/api/volunteer/accepteddonations", {
+//       const response = await axios.get("https://annsevaa.onrender.com/api/volunteer/accepteddonations", {
 //         headers: {
 //           "Content-Type": "application/json",
 //           Authorization: "Bearer " + token,
@@ -469,7 +469,7 @@
 //                           const token = localStorage.getItem("token");
 //                           try {
 //                             const response = await axios.patch(
-//                               `http://localhost:3001/api/volunteer/accept/${donationId}`,
+//                               `https://annsevaa.onrender.com/api/volunteer/accept/${donationId}`,
 //                               {},
 //                               {
 //                                 headers: {
@@ -594,7 +594,7 @@
 //                           const token = localStorage.getItem("token");
 //                           try {
 //                             const response = await axios.patch(
-//                               `http://localhost:3001/api/volunteer/pickedfood/${donationId}`,
+//                               `https://annsevaa.onrender.com/api/volunteer/pickedfood/${donationId}`,
 //                               {},
 //                               {
 //                                 headers: {
@@ -700,7 +700,7 @@ const Volunteer = () => {
   const fetchDonations = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get("http://localhost:3001/api/volunteer", {
+      const response = await axios.get("https://annsevaa.onrender.com/api/volunteer", {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
@@ -813,7 +813,7 @@ const Volunteer = () => {
                           const token = localStorage.getItem("token");
                           try {
                             const response = await axios.patch(
-                              `http://localhost:3001/api/volunteer/accept/${donationId}`,
+                              `https://annsevaa.onrender.com/api/volunteer/accept/${donationId}`,
                               {},
                               {
                                 headers: {
@@ -937,7 +937,7 @@ const Volunteer = () => {
                           const token = localStorage.getItem("token");
                           try {
                             const response = await axios.patch(
-                              `http://localhost:3001/api/volunteer/pickedfood/${donationId}`,
+                              `https://annsevaa.onrender.com/api/volunteer/pickedfood/${donationId}`,
                               {},
                               {
                                 headers: {

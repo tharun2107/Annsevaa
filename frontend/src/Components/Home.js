@@ -25,9 +25,9 @@ const Home = () => {
   const fetchData = async () => {
     try {
       const [donationsRes, requestsRes, usersRes] = await Promise.all([
-        axios.get("http://localhost:3001/api/metrics/donations"),
-        axios.get("http://localhost:3001/api/metrics/requests"),
-        axios.get("http://localhost:3001/api/metrics/users"),
+        axios.get("https://annsevaa.onrender.com/api/metrics/donations"),
+        axios.get("https://annsevaa.onrender.com/api/metrics/requests"),
+        axios.get("https://annsevaa.onrender.com/api/metrics/users"),
       ]);
 
       setMetrics({

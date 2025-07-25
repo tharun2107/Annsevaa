@@ -73,7 +73,7 @@ const Registration = () => {
     try {
       console.log('📝 Submitting registration with formData:', formData);
       const response = await api.post(
-        "http://localhost:3001/api/auth/register",
+        "https://annsevaa.onrender.com/api/auth/register",
         formData
       );
 
