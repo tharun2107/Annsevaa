@@ -160,7 +160,7 @@ const Home = () => {
           <img src={missionImg} alt="Helping Hands" />
         </div>
       </div>
-      <Chatbot />
+      {/* <Chatbot /> */}
       <section className="services">
         <h2>Help The Helpless</h2>
         <div className="service-cards">

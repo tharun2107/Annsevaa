@@ -179,7 +179,7 @@ const DonorPage = () => {
                 {activeRequests.map((item) =>
                   item._id ? (
                     <li key={item._id} className="request">
-                      <h4>{item.receiverName || "Request"}</h4>
+                      <h4 style={{ color: "#388e3c" }}>{item.receiverName || "Request"}</h4>
                       <p>Quantity: {item.quantity}</p>
                       <p>Phone: {item.receiverPhone}</p>
                       <p>Address: {item.receiverAddress}</p>
@@ -202,8 +202,9 @@ const DonorPage = () => {
                 {activeOrganizations.map((item) =>
                   item._id ? (
                     <li key={item._id} className="organization">
-                      <h4>{item.name || "Organization"}</h4>
+                      <h4 style={{ color: "#388e3c" }}>{item.name || "Organization"}</h4>
                       <p>Phone: {item.phone}</p>
+                      <p>Address: {item.location.landmark}</p>
                       <p>Is Active: {item.isActive ? "Yes" : "No"}</p>
                       <button
                         onClick={() => handleDonateClick(item, true, item._id)}

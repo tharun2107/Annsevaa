@@ -387,6 +387,7 @@ export const Receiver = () => {
                   </p>
                   <p>
                     <strong>Status :</strong> {donation.status}
+                    {console.log(donation.status) }
                   </p>
                   <button
                     onClick={() => handleReceivedFood(donation.donationId)}

@@ -706,6 +706,7 @@ const Volunteer = () => {
           Authorization: "Bearer " + token,
         },
       });
+      console.log("donations", response.data);
 
       // If no donations, clear the previous donations
       setDonations(response.data || []);
@@ -915,8 +916,7 @@ const Volunteer = () => {
                     <h3 style={{ color: "#007bff" }}>Receiver</h3>
                     <p>
                       <strong>Name:</strong>{" "}
-                      {donation.receiver?.name ||
-                        "Receiver information unavailable"}
+                      <h4 style={{ color: 'green' }}>{donation.receiver?.name || "Request"}</h4>
                     </p>
                     <p>
                       <strong>Location:</strong>{" "}

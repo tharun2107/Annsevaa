@@ -42,23 +42,41 @@ const registerHandler = async (req, res) => {
   }
 };
 
-// Login handler (password-based)
 const loginHandler = async (req, res) => {
   const { phone, password } = req.body;
+
   try {
     const user = await User.findOne({ phone }).select('+password');
     if (!user) {
       return res.status(400).json({ message: 'Invalid phone or password' });
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid phone or password' });
     }
-    const token = jwt.sign({ id: user._id, phone: user.phone, role: user.role }, process.env.JWT_SECRET, { expiresIn: '10h' });
-    res.status(200).json({ message: 'Login successful', token });
+
+    const token = jwt.sign(
+      { id: user._id, phone: user.phone, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '10h' }
+    );
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: userObj,
+      redirectUrl: user.role === "admin" ? "/admin" : "/dashboard" // optional
+    });
+
   } catch (error) {
+    console.error("Login failed:", error);
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
+
 
 module.exports = { registerHandler, loginHandler };
